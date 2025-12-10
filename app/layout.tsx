@@ -22,7 +22,6 @@ export default function RootLayout({
       <body className={`${inter.className} h-screen bg-slate-50 antialiased`}>
         <div className="flex h-full">
           <Sidebar />
-
           <div className="p-8">{children}</div>
         </div>
       </body>
