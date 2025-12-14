@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Sidebar from "./_components/sidebar";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} h-screen bg-slate-50 antialiased`}>
+        <Toaster />
         <div className="flex h-full">
           <Sidebar />
           <div className="w-full p-8">{children}</div>

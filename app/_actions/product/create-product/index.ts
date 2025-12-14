@@ -10,7 +10,6 @@ export const createProduct = async ({
   stock,
 }: CreateProductSchema) => {
   createProductSchema.parse({ name, price, stock });
-
   await db.product.create({
     data: {
       name,

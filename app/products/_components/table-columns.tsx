@@ -1,11 +1,24 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/app/_components/ui/alert-dialog";
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/_components/ui/dropdown-menu";
 import { Product } from "@/app/_generated/prisma/client";
@@ -17,6 +30,7 @@ import {
   MoreHorizontalIcon,
   TrashIcon,
 } from "lucide-react";
+import DeleteProductDialogContent from "./delete-product-dialog-content";
 
 const getStatusLabel = (status: string) => {
   return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
@@ -59,32 +73,47 @@ export const productsColumns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const product = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm">
-              <MoreHorizontalIcon className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
+      const handleCopyToClipboard = (productId: string) => {
+        navigator.clipboard.writeText(productId);
+      };
 
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              className="gap-1.5"
-              onClick={() => navigator.clipboard.writeText(product.id)}
-            >
-              <ClipboardCopyIcon className="size-4" />
-              Copiar ID
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-1.5">
-              <EditIcon className="size-4" />
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-1.5">
-              <TrashIcon className="size-4" />
-              Deletar
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      return (
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon-sm">
+                <MoreHorizontalIcon className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent>
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+
+              <DropdownMenuItem
+                className="gap-1.5"
+                onClick={() => handleCopyToClipboard(product.id)}
+              >
+                <ClipboardCopyIcon className="size-4" />
+                Copiar ID
+              </DropdownMenuItem>
+
+              <DropdownMenuItem className="gap-1.5">
+                <EditIcon className="size-4" />
+                Editar
+              </DropdownMenuItem>
+
+              <AlertDialogTrigger asChild>
+                <DropdownMenuItem className="gap-1.5">
+                  <TrashIcon className="size-4" />
+                  Deletar
+                </DropdownMenuItem>
+              </AlertDialogTrigger>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DeleteProductDialogContent productId={product.id} />
+        </AlertDialog>
       );
     },
   },
