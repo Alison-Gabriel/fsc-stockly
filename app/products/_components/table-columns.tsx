@@ -2,13 +2,6 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/app/_components/ui/alert-dialog";
 import { Badge } from "@/app/_components/ui/badge";
@@ -30,7 +23,7 @@ import {
   MoreHorizontalIcon,
   TrashIcon,
 } from "lucide-react";
-import DeleteProductDialogContent from "./delete-product-dialog-content";
+import DeleteProductDialogContent from "./delete-dialog-content";
 
 const getStatusLabel = (status: string) => {
   return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
