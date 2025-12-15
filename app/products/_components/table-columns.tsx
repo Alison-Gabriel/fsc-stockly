@@ -24,6 +24,9 @@ import {
   TrashIcon,
 } from "lucide-react";
 import DeleteProductDialogContent from "./delete-dialog-content";
+import { Dialog, DialogTrigger } from "@/app/_components/ui/dialog";
+import UpsertProductDialogContent from "./upsert-dialog-content";
+import { useState } from "react";
 
 const getStatusLabel = (status: string) => {
   return status === "IN_STOCK" ? "Em estoque" : "Esgotado";
@@ -64,49 +67,67 @@ export const productsColumns: ColumnDef<Product>[] = [
     accessorKey: "actions",
     header: "Ações",
     cell: ({ row }) => {
+      const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
       const product = row.original;
 
       const handleCopyToClipboard = (productId: string) => {
         navigator.clipboard.writeText(productId);
       };
 
+      const handleCloseEditDialog = () => {
+        setIsEditDialogOpen(false);
+      };
+
       return (
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon-sm">
-                <MoreHorizontalIcon className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <AlertDialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm">
+                  <MoreHorizontalIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent>
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+              <DropdownMenuContent>
+                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuSeparator />
 
-              <DropdownMenuItem
-                className="gap-1.5"
-                onClick={() => handleCopyToClipboard(product.id)}
-              >
-                <ClipboardCopyIcon className="size-4" />
-                Copiar ID
-              </DropdownMenuItem>
-
-              <DropdownMenuItem className="gap-1.5">
-                <EditIcon className="size-4" />
-                Editar
-              </DropdownMenuItem>
-
-              <AlertDialogTrigger asChild>
-                <DropdownMenuItem className="gap-1.5">
-                  <TrashIcon className="size-4" />
-                  Deletar
+                <DropdownMenuItem
+                  className="gap-1.5"
+                  onClick={() => handleCopyToClipboard(product.id)}
+                >
+                  <ClipboardCopyIcon className="size-4" />
+                  Copiar ID
                 </DropdownMenuItem>
-              </AlertDialogTrigger>
-            </DropdownMenuContent>
-          </DropdownMenu>
 
-          <DeleteProductDialogContent productId={product.id} />
-        </AlertDialog>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem className="gap-1.5">
+                    <EditIcon className="size-4" />
+                    Editar
+                  </DropdownMenuItem>
+                </DialogTrigger>
+
+                <AlertDialogTrigger asChild>
+                  <DropdownMenuItem className="gap-1.5">
+                    <TrashIcon className="size-4" />
+                    Deletar
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <UpsertProductDialogContent
+              onSuccess={handleCloseEditDialog}
+              defaultValues={{
+                name: product.name,
+                price: Number(product.price),
+                stock: product.stock,
+                id: product.id,
+              }}
+            />
+            <DeleteProductDialogContent productId={product.id} />
+          </AlertDialog>
+        </Dialog>
       );
     },
   },

@@ -1,10 +1,10 @@
 "use client";
 
-import { createProduct } from "@/app/_actions/product/create-product";
+import { upsertProduct } from "@/app/_actions/product/upsert-product";
 import {
-  createProductSchema,
-  CreateProductSchema,
-} from "@/app/_actions/product/create-product/schema";
+  upsertProductSchema,
+  UpsertProductSchema,
+} from "@/app/_actions/product/upsert-product/schema";
 import { Button } from "@/app/_components/ui/button";
 import {
   DialogClose,
@@ -29,25 +29,34 @@ import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 
 interface UpsertProductDialogContentProps {
+  defaultValues?: UpsertProductSchema;
   onSuccess?: () => void;
 }
 
 const UpsertProductDialogContent = ({
+  defaultValues,
   onSuccess,
 }: UpsertProductDialogContentProps) => {
-  const form = useForm<CreateProductSchema>({
-    resolver: zodResolver(createProductSchema),
+  const form = useForm<UpsertProductSchema>({
+    resolver: zodResolver(upsertProductSchema),
     shouldUnregister: true,
-    defaultValues: {
+    defaultValues: defaultValues || {
       name: "",
       price: 0,
       stock: 0,
     },
   });
 
-  const handleFormSubmit = async (data: CreateProductSchema) => {
+  const isProductBeingEditing = Boolean(defaultValues);
+
+  const handleFormSubmit = async (data: UpsertProductSchema) => {
     try {
-      await createProduct(data);
+      await upsertProduct({
+        id: defaultValues?.id,
+        name: data.name,
+        price: data.price,
+        stock: data.stock,
+      });
       onSuccess?.();
     } catch (err) {
       console.error(err);
@@ -57,7 +66,9 @@ const UpsertProductDialogContent = ({
   return (
     <DialogContent className="w-sm">
       <DialogHeader>
-        <DialogTitle>Cadastrar produto</DialogTitle>
+        <DialogTitle>
+          {isProductBeingEditing ? "Editar produto" : "Cadastrar produto"}
+        </DialogTitle>
         <DialogDescription>Insira as informações abaixo.</DialogDescription>
       </DialogHeader>
 
@@ -139,7 +150,7 @@ const UpsertProductDialogContent = ({
               size="sm"
               className="font-semibold"
             >
-              Cadastrar
+              {isProductBeingEditing ? "Editar" : "Cadastrar"}
               {form.formState.isSubmitting && (
                 <Loader2Icon className="size-3.5 animate-spin" />
               )}
