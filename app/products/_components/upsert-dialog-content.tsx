@@ -27,6 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
+import { toast } from "sonner";
 
 interface UpsertProductDialogContentProps {
   defaultValues?: UpsertProductSchema;
@@ -58,8 +59,18 @@ const UpsertProductDialogContent = ({
         stock: data.stock,
       });
       onSuccess?.();
+      toast.success(
+        isProductBeingEditing
+          ? "Produto editado com sucesso!"
+          : "Produto criado com sucesso!",
+      );
     } catch (err) {
-      console.error(err);
+      console.error((err as Error).message);
+      toast.error(
+        isProductBeingEditing
+          ? "Erro ao editar produto."
+          : "Erro ao criar produto.",
+      );
     }
   };
 
