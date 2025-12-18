@@ -71,6 +71,7 @@ const UpsertSaleSheetContent = ({
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
     [],
   );
+
   const { execute: executeCreateSale } = useAction(createSale, {
     onSuccess: () => {
       toast.success("Venda realizada com sucesso!");

@@ -81,7 +81,7 @@ const ProductActionsDropdownMenu = ({
         </DropdownMenu>
 
         <UpsertProductDialogContent
-          onSuccess={handleCloseEditDialog}
+          closeUpsertDialog={handleCloseEditDialog}
           defaultValues={{
             price: Number(product.price),
             name: product.name,

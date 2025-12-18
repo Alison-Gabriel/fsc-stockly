@@ -25,67 +25,70 @@ import {
 import { Input } from "@/app/_components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
 import { useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
 
 interface UpsertProductDialogContentProps {
   defaultValues?: UpsertProductSchema;
-  onSuccess?: () => void;
+  closeUpsertDialog: () => void;
 }
 
 const UpsertProductDialogContent = ({
   defaultValues,
-  onSuccess,
+  closeUpsertDialog,
 }: UpsertProductDialogContentProps) => {
+  const isProductBeingEditing = Boolean(defaultValues);
+  const formDefaultValues = isProductBeingEditing
+    ? defaultValues
+    : { name: "", price: 0, stock: 0 };
+
   const form = useForm<UpsertProductSchema>({
     resolver: zodResolver(upsertProductSchema),
     shouldUnregister: true,
-    defaultValues: defaultValues || {
-      name: "",
-      price: 0,
-      stock: 0,
+    defaultValues: formDefaultValues,
+  });
+
+  const { execute: executeUpsertProduct } = useAction(upsertProduct, {
+    onSuccess: () => {
+      const successMessage = isProductBeingEditing
+        ? "Produto editado com sucesso!"
+        : "Produto criado com sucesso!";
+
+      closeUpsertDialog();
+      toast.success(successMessage);
+    },
+    onError: () => {
+      const errorMessage = isProductBeingEditing
+        ? "Erro ao editar produto, por favor, tente novamente."
+        : "Erro ao adicionar produto, por favor, tente novamente.";
+
+      toast.error(errorMessage);
     },
   });
 
-  const isProductBeingEditing = Boolean(defaultValues);
-
-  const handleFormSubmit = async (data: UpsertProductSchema) => {
-    try {
-      await upsertProduct({
-        id: defaultValues?.id,
-        name: data.name,
-        price: data.price,
-        stock: data.stock,
-      });
-      onSuccess?.();
-      toast.success(
-        isProductBeingEditing
-          ? "Produto editado com sucesso!"
-          : "Produto criado com sucesso!",
-      );
-    } catch (err) {
-      console.error((err as Error).message);
-      toast.error(
-        isProductBeingEditing
-          ? "Erro ao editar produto."
-          : "Erro ao criar produto.",
-      );
-    }
+  const handleUpsertProduct = (data: UpsertProductSchema) => {
+    executeUpsertProduct({
+      id: defaultValues?.id,
+      name: data.name,
+      price: data.price,
+      stock: data.stock,
+    });
   };
 
   return (
     <DialogContent className="w-sm">
       <DialogHeader>
         <DialogTitle>
-          {isProductBeingEditing ? "Editar produto" : "Cadastrar produto"}
+          {isProductBeingEditing ? "Editar produto" : "Adicionar produto"}
         </DialogTitle>
         <DialogDescription>Insira as informações abaixo.</DialogDescription>
       </DialogHeader>
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleFormSubmit)}
+          onSubmit={form.handleSubmit(handleUpsertProduct)}
           className="space-y-6"
         >
           <FormField

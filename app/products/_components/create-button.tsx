@@ -21,7 +21,7 @@ const CreateProductButton = () => {
           Novo produto
         </Button>
       </DialogTrigger>
-      <UpsertProductDialogContent onSuccess={handleCloseDialog} />
+      <UpsertProductDialogContent closeUpsertDialog={handleCloseDialog} />
     </Dialog>
   );
 };
