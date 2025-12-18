@@ -30,10 +30,11 @@ import {
 import { Product } from "@/app/_generated/prisma/client";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import SalesActionsDropdownMenu from "./actions-dropdown-menu";
+import { PlusIcon } from "lucide-react";
 
 const upsertSaleFormSchema = z.object({
   productId: z.uuid("O produto é obrigatório."),
@@ -127,6 +128,13 @@ const UpsertSaleSheetContent = ({
     }, 0);
   }, [selectedProducts]);
 
+  const handleRemoveProductFromState = (productId: string) => {
+    const newSelectedProducts = selectedProducts.filter(
+      (product) => product.id !== productId,
+    );
+    setSelectedProducts(newSelectedProducts);
+  };
+
   return (
     <SheetContent className="max-w-3xl!">
       <SheetHeader>
@@ -193,6 +201,7 @@ const UpsertSaleSheetContent = ({
               <TableHead className="p-3">Preço unitário</TableHead>
               <TableHead className="p-3">Quantidade</TableHead>
               <TableHead className="p-3">Total</TableHead>
+              <TableHead className="p-3">Ações</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -207,6 +216,12 @@ const UpsertSaleSheetContent = ({
                 <TableCell className="p-3">
                   {formatNumberToBRL(product.price * product.quantity)}
                 </TableCell>
+                <TableCell className="p-3">
+                  <SalesActionsDropdownMenu
+                    onRemoveProduct={handleRemoveProductFromState}
+                    product={product}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -219,6 +234,7 @@ const UpsertSaleSheetContent = ({
               <TableCell className="p-3">
                 {formatNumberToBRL(productsTotal)}
               </TableCell>
+              <TableCell />
             </TableRow>
           </TableFooter>
         </Table>
