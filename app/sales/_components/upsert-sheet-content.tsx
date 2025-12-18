@@ -12,8 +12,10 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import {
+  SheetClose,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from "@/app/_components/ui/sheet";
@@ -31,25 +33,22 @@ import { Product } from "@/app/_generated/prisma/client";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import SalesActionsDropdownMenu from "./actions-dropdown-menu";
-import { PlusIcon } from "lucide-react";
+import { CheckIcon, PlusIcon } from "lucide-react";
+import { createSale } from "@/app/_actions/sale/create-sale";
+import { toast } from "sonner";
 
 const upsertSaleFormSchema = z.object({
   productId: z.uuid("O produto é obrigatório."),
   quantity: z.coerce
     .number<number>()
     .int("Digite uma quantidade inteira.")
-    .nonnegative("A quantidade não pode ser negativa."),
+    .positive("A quantidade não pode ser negativa."),
 });
 
 type UpsertSaleFormSchema = z.infer<typeof upsertSaleFormSchema>;
-
-interface UpsertSaleSheetContentProps {
-  products: Product[];
-  options: ComboboxOption[];
-}
 
 interface SelectedProduct {
   id: string;
@@ -58,9 +57,16 @@ interface SelectedProduct {
   quantity: number;
 }
 
+interface UpsertSaleSheetContentProps {
+  products: Product[];
+  options: ComboboxOption[];
+  onFinishSaleSuccess: () => void;
+}
+
 const UpsertSaleSheetContent = ({
   products,
   options,
+  onFinishSaleSuccess,
 }: UpsertSaleSheetContentProps) => {
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
     [],
@@ -86,21 +92,16 @@ const UpsertSaleSheetContent = ({
     const isSelectedProductNotExistsOnDatabase = !selectedProduct;
     if (isSelectedProductNotExistsOnDatabase) return;
 
+    let shouldShownOutOfStockError = false;
+    let shouldResetFormFields = false;
+
     setSelectedProducts((alreadySelectedProducts) => {
       const existingProduct = alreadySelectedProducts.find(
         (product) => product.id === selectedProduct.id,
       );
-      const isSelectedProductAlreadyExists = Boolean(existingProduct);
-      const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
+      const isSelectedProductAlreadySelected = Boolean(existingProduct);
 
-      if (isSelectedProductOutOfStock) {
-        form.setError("quantity", {
-          message: "Quantidade indisponível em estoque.",
-        });
-        return alreadySelectedProducts;
-      }
-
-      if (isSelectedProductAlreadyExists) {
+      if (isSelectedProductAlreadySelected) {
         return alreadySelectedProducts.map((product) => {
           const isCurrentProductTheSelectedProduct =
             product.id === existingProduct?.id;
@@ -110,13 +111,11 @@ const UpsertSaleSheetContent = ({
               quantity + product.quantity > selectedProduct.stock;
 
             if (isCurrentProductOutOfStock) {
-              form.setError("quantity", {
-                message: "Quantidade indisponível em estoque.",
-              });
+              shouldShownOutOfStockError = true;
               return product;
             }
 
-            form.reset();
+            shouldResetFormFields = true;
             return {
               id: existingProduct.id,
               name: existingProduct.name,
@@ -128,6 +127,13 @@ const UpsertSaleSheetContent = ({
         });
       }
 
+      const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
+
+      if (isSelectedProductOutOfStock) {
+        shouldShownOutOfStockError = true;
+        return alreadySelectedProducts;
+      }
+
       const formattedSelectedProduct = {
         id: selectedProduct.id,
         name: selectedProduct.name,
@@ -135,9 +141,19 @@ const UpsertSaleSheetContent = ({
         quantity,
       };
 
-      form.reset();
+      shouldResetFormFields = true;
       return [...alreadySelectedProducts, formattedSelectedProduct];
     });
+
+    if (shouldShownOutOfStockError) {
+      return form.setError("quantity", {
+        message: "Quantidade indisponível em estoque.",
+      });
+    }
+
+    if (shouldResetFormFields) {
+      return form.reset();
+    }
   };
 
   const productsTotal = useMemo(() => {
@@ -151,6 +167,24 @@ const UpsertSaleSheetContent = ({
       (product) => product.id !== productId,
     );
     setSelectedProducts(newSelectedProducts);
+  };
+
+  const handleFinishSale = async () => {
+    try {
+      await createSale({
+        products: selectedProducts.map((product) => ({
+          id: product.id,
+          quantity: product.quantity,
+        })),
+      });
+      toast.success("Venda finalizada com sucesso!");
+      onFinishSaleSuccess();
+    } catch (error) {
+      toast.error("Erro ao finalizar venda.");
+      console.error((error as Error).message);
+    } finally {
+      setSelectedProducts([]);
+    }
   };
 
   return (
@@ -167,7 +201,7 @@ const UpsertSaleSheetContent = ({
           className="space-y-6 px-4"
           onSubmit={form.handleSubmit(handleUpsertSaleFormSubmit)}
         >
-          <FormField
+          <Controller
             control={form.control}
             name="productId"
             render={({ field }) => (
@@ -203,60 +237,69 @@ const UpsertSaleSheetContent = ({
             )}
           />
 
-          <Button type="submit" className="w-full">
-            <PlusIcon className="size-5" /> Adicionar produto
+          <Button type="submit" variant="secondary" className="w-full">
+            <PlusIcon className="size-4" /> Adicionar produto
           </Button>
         </form>
       </Form>
 
-      <div className="px-4">
-        <Table>
-          <TableCaption>Lista de produtos adicionados à venda</TableCaption>
+      {Boolean(selectedProducts.length) && (
+        <div>
+          <div className="overflow-hidden px-4">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="p-4">Produto</TableHead>
+                  <TableHead className="p-4">Preço unitário</TableHead>
+                  <TableHead className="p-4">Quantidade</TableHead>
+                  <TableHead className="p-4">Total</TableHead>
+                  <TableHead className="p-4">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
 
-          <TableHeader>
-            <TableRow>
-              <TableHead className="p-3">Produto</TableHead>
-              <TableHead className="p-3">Preço unitário</TableHead>
-              <TableHead className="p-3">Quantidade</TableHead>
-              <TableHead className="p-3">Total</TableHead>
-              <TableHead className="p-3">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
+              <TableBody>
+                {selectedProducts.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="p-4">{product.name}</TableCell>
+                    <TableCell className="p-4">
+                      {formatNumberToBRL(product.price)}
+                    </TableCell>
+                    <TableCell className="p-4">{product.quantity}</TableCell>
+                    <TableCell className="p-4">
+                      {formatNumberToBRL(product.price * product.quantity)}
+                    </TableCell>
+                    <TableCell className="p-4">
+                      <SalesActionsDropdownMenu
+                        onRemoveProduct={handleRemoveProductFromState}
+                        product={product}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
 
-          <TableBody>
-            {selectedProducts.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell className="p-3">{product.name}</TableCell>
-                <TableCell className="p-3">
-                  {formatNumberToBRL(product.price)}
-                </TableCell>
-                <TableCell className="p-3">{product.quantity}</TableCell>
-                <TableCell className="p-3">
-                  {formatNumberToBRL(product.price * product.quantity)}
-                </TableCell>
-                <TableCell className="p-3">
-                  <SalesActionsDropdownMenu
-                    onRemoveProduct={handleRemoveProductFromState}
-                    product={product}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={3} className="p-4">
+                    Total
+                  </TableCell>
+                  <TableCell className="p-4">
+                    {formatNumberToBRL(productsTotal)}
+                  </TableCell>
+                  <TableCell />
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </div>
 
-          <TableFooter>
-            <TableRow>
-              <TableCell colSpan={3} className="p-3">
-                Total
-              </TableCell>
-              <TableCell className="p-3">
-                {formatNumberToBRL(productsTotal)}
-              </TableCell>
-              <TableCell />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </div>
+          <SheetFooter>
+            <Button onClick={handleFinishSale}>
+              <CheckIcon className="size-5" />
+              Finalizar venda
+            </Button>
+          </SheetFooter>
+        </div>
+      )}
     </SheetContent>
   );
 };
