@@ -12,7 +12,6 @@ import {
 } from "@/app/_components/ui/form";
 import { Input } from "@/app/_components/ui/input";
 import {
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -22,7 +21,6 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -39,6 +37,8 @@ import SalesActionsDropdownMenu from "./actions-dropdown-menu";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import { createSale } from "@/app/_actions/sale/create-sale";
 import { toast } from "sonner";
+import { useAction } from "next-safe-action/hooks";
+import { flattenValidationErrors } from "next-safe-action";
 
 const upsertSaleFormSchema = z.object({
   productId: z.uuid("O produto é obrigatório."),
@@ -71,6 +71,16 @@ const UpsertSaleSheetContent = ({
   const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
     [],
   );
+  const { execute: executeCreateSale } = useAction(createSale, {
+    onSuccess: () => {
+      toast.success("Venda realizada com sucesso!");
+      onFinishSaleSuccess();
+    },
+    onError: ({ error: { validationErrors, serverError } }) => {
+      const flattenedError = flattenValidationErrors(validationErrors);
+      toast.error(serverError ?? flattenedError.formErrors[0]);
+    },
+  });
 
   const form = useForm<UpsertSaleFormSchema>({
     resolver: zodResolver(upsertSaleFormSchema),
@@ -169,22 +179,13 @@ const UpsertSaleSheetContent = ({
     setSelectedProducts(newSelectedProducts);
   };
 
-  const handleFinishSale = async () => {
-    try {
-      await createSale({
-        products: selectedProducts.map((product) => ({
-          id: product.id,
-          quantity: product.quantity,
-        })),
-      });
-      toast.success("Venda finalizada com sucesso!");
-      onFinishSaleSuccess();
-    } catch (error) {
-      toast.error("Erro ao finalizar venda.");
-      console.error((error as Error).message);
-    } finally {
-      setSelectedProducts([]);
-    }
+  const handleFinishSale = () => {
+    executeCreateSale({
+      products: selectedProducts.map((product) => ({
+        id: product.id,
+        quantity: product.quantity,
+      })),
+    });
   };
 
   return (
