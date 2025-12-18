@@ -32,17 +32,14 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-white p-3">
+    <div className="overflow-hidden rounded-xl border shadow">
       <Table>
-        <TableHeader className="rounded-tl-lg rounded-tr-lg bg-slate-50">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead
-                    key={header.id}
-                    className="p-4 first:rounded-tl-lg last:rounded-tr-lg"
-                  >
+                  <TableHead key={header.id} className="p-4">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -65,10 +62,7 @@ export function DataTable<TData, TValue>({
                 className="group"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    className="p-4 group-last:first:rounded-bl-lg group-last:last:rounded-br-lg"
-                  >
+                  <TableCell key={cell.id} className="p-4">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -77,7 +71,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                Nenhum produto encontrado.
               </TableCell>
             </TableRow>
           )}

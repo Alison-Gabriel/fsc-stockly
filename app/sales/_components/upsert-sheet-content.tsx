@@ -91,13 +91,32 @@ const UpsertSaleSheetContent = ({
         (product) => product.id === selectedProduct.id,
       );
       const isSelectedProductAlreadyExists = Boolean(existingProduct);
+      const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
+
+      if (isSelectedProductOutOfStock) {
+        form.setError("quantity", {
+          message: "Quantidade indisponível em estoque.",
+        });
+        return alreadySelectedProducts;
+      }
 
       if (isSelectedProductAlreadyExists) {
         return alreadySelectedProducts.map((product) => {
-          const isCurrentProductIdEqualsToSelectedProductId =
+          const isCurrentProductTheSelectedProduct =
             product.id === existingProduct?.id;
 
-          if (isCurrentProductIdEqualsToSelectedProductId) {
+          if (isCurrentProductTheSelectedProduct) {
+            const isCurrentProductOutOfStock =
+              quantity + product.quantity > selectedProduct.stock;
+
+            if (isCurrentProductOutOfStock) {
+              form.setError("quantity", {
+                message: "Quantidade indisponível em estoque.",
+              });
+              return product;
+            }
+
+            form.reset();
             return {
               id: existingProduct.id,
               name: existingProduct.name,
@@ -105,7 +124,6 @@ const UpsertSaleSheetContent = ({
               quantity: existingProduct.quantity + quantity,
             };
           }
-
           return product;
         });
       }
@@ -117,9 +135,9 @@ const UpsertSaleSheetContent = ({
         quantity,
       };
 
+      form.reset();
       return [...alreadySelectedProducts, formattedSelectedProduct];
     });
-    form.reset();
   };
 
   const productsTotal = useMemo(() => {
