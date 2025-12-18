@@ -13,7 +13,6 @@ const ProductsPage = async () => {
           <p className="text-primary text-xs font-semibold">Produtos</p>
           <h1 className="text-xl font-semibold">Gestão de produtos</h1>
         </div>
-
         <CreateProductButton />
       </header>
 
