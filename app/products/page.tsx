@@ -2,7 +2,8 @@ import { DataTable } from "../_components/ui/data-table";
 import { productsColumns } from "./_components/table-columns";
 import { getProducts } from "../_data/product/get-products";
 import CreateProductButton from "./_components/create-button";
-import Header, {
+import {
+  Header,
   HeaderLeft,
   HeaderRight,
   HeaderSubtitle,
@@ -13,7 +14,7 @@ const ProductsPage = async () => {
   const products = await getProducts();
 
   return (
-    <main className="h-full space-y-8">
+    <main className="h-full space-y-5">
       <Header>
         <HeaderLeft>
           <HeaderSubtitle>Produtos</HeaderSubtitle>

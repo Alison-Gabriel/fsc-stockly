@@ -19,6 +19,7 @@ export const upsertSale = actionClient
             saleProducts: true,
           },
         });
+
         if (!existingSale) return;
 
         await transaction.sale.delete({
@@ -84,4 +85,5 @@ export const upsertSale = actionClient
 
     revalidatePath("/products");
     revalidatePath("/sales");
+    revalidatePath("/");
   });

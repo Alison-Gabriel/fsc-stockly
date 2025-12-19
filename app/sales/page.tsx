@@ -1,4 +1,5 @@
-import Header, {
+import {
+  Header,
   HeaderLeft,
   HeaderRight,
   HeaderSubtitle,
@@ -32,7 +33,7 @@ const SalesPage = async () => {
   }));
 
   return (
-    <main className="h-full space-y-8">
+    <main className="h-full space-y-5">
       <Header>
         <HeaderLeft>
           <HeaderSubtitle>Vendas</HeaderSubtitle>

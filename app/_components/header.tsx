@@ -36,12 +36,10 @@ interface HeaderProps {
   children: ReactNode;
 }
 
-const Header = ({ children }: HeaderProps) => {
+export const Header = ({ children }: HeaderProps) => {
   return (
     <header className="flex w-full items-center justify-between">
       {children}
     </header>
   );
 };
-
-export default Header;

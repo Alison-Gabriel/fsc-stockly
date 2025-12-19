@@ -11,5 +11,6 @@ export const deleteProduct = actionClient
     await db.product.delete({
       where: { id },
     });
+
     revalidatePath("/products");
   });
