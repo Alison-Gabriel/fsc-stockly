@@ -15,7 +15,6 @@ const ProductsPage = async () => {
         </div>
         <CreateProductButton />
       </header>
-
       <DataTable columns={productsColumns} data={products} />
     </main>
   );

@@ -12,7 +12,7 @@ export const saleTableColumns: ColumnDef<SaleDTO>[] = [
     accessorKey: "saleProductsNames",
     cell: ({ row }) => {
       const { saleProductsNames } = row.original;
-      return saleProductsNames;
+      return <span className="truncate">{saleProductsNames}</span>;
     },
   },
   {

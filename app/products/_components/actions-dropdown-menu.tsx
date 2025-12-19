@@ -34,8 +34,8 @@ const ProductActionsDropdownMenu = ({
 }: ProductActionsDropdownMenu) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
-  const handleCopyToClipboard = (productId: string) => {
-    navigator.clipboard.writeText(productId);
+  const handleCopyToClipboard = () => {
+    navigator.clipboard.writeText(product.id);
   };
 
   const handleCloseEditDialog = () => {
@@ -58,7 +58,7 @@ const ProductActionsDropdownMenu = ({
 
             <DropdownMenuItem
               className="gap-1.5"
-              onClick={() => handleCopyToClipboard(product.id)}
+              onClick={handleCopyToClipboard}
             >
               <ClipboardCopyIcon className="size-4" />
               Copiar ID
@@ -83,7 +83,7 @@ const ProductActionsDropdownMenu = ({
         <UpsertProductDialogContent
           closeUpsertDialog={handleCloseEditDialog}
           defaultValues={{
-            price: Number(product.price),
+            price: product.price,
             name: product.name,
             stock: product.stock,
             id: product.id,
