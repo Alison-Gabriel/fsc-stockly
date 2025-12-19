@@ -10,18 +10,7 @@ const connectionString = `${process.env.DATABASE_URL}`;
 const adapter = new PrismaPg({ connectionString });
 
 const createPrismaClient = () => {
-  return new PrismaClient({ adapter }).$extends({
-    result: {
-      product: {
-        status: {
-          needs: { stock: true },
-          compute(product) {
-            return product.stock <= 0 ? "OUT_OF_STOCK" : "IN_STOCK";
-          },
-        },
-      },
-    },
-  });
+  return new PrismaClient({ adapter });
 };
 
 let prisma: ReturnType<typeof createPrismaClient>;

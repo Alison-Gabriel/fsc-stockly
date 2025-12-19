@@ -23,7 +23,10 @@ export const getSales = async (): Promise<SaleDTO[]> => {
     id: sale.id,
     date: sale.date,
     saleProductsNames: sale.saleProducts
-      .map(({ product }) => product.name)
+      .map((saleProduct) => {
+        const saleProductNameWithQuantity = `${saleProduct.product.name} (${saleProduct.quantity})`;
+        return saleProductNameWithQuantity;
+      })
       .join(" • "),
     totalSaleProducts: sale.saleProducts.length,
     totalAmount: sale.saleProducts.reduce((total, product) => {

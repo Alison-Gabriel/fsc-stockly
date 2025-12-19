@@ -1,13 +1,13 @@
 "use client";
 
 import { Badge } from "@/app/_components/ui/badge";
-import { Product } from "@/app/_generated/prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { CircleIcon } from "lucide-react";
 import ProductActionsDropdownMenu from "./actions-dropdown-menu";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
+import type { ProductDTO } from "@/app/_data/product/get-products";
 
-export const productsColumns: ColumnDef<Product>[] = [
+export const productsColumns: ColumnDef<ProductDTO>[] = [
   {
     accessorKey: "name",
     header: "Produto",
@@ -16,8 +16,8 @@ export const productsColumns: ColumnDef<Product>[] = [
     accessorKey: "price",
     header: "Valor unitário",
     cell: ({ row }) => {
-      const product = row.original;
-      return formatNumberToBRL(Number(product.price));
+      const { price } = row.original;
+      return formatNumberToBRL(price);
     },
   },
   {
@@ -28,26 +28,34 @@ export const productsColumns: ColumnDef<Product>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status");
+      const { status } = row.original;
 
-      const getStatusLabel = (status: "IN_STOCK" | "OUT_OF_STOCK") => {
+      const getProductStatusLabel = () => {
         if (status === "IN_STOCK") {
           return "Em estoque";
         }
-        return "Fora de estoque";
+        if (status === "OUT_OF_STOCK") {
+          return "Fora de estoque";
+        }
       };
 
-      const statusLabel = getStatusLabel(status);
+      const getProductBadgeClassName = () => {
+        switch (status) {
+          case "IN_STOCK":
+            return "bg-primary text-primary-foreground fill-primary-foreground";
+          case "OUT_OF_STOCK":
+            return "bg-secondary text-secondary-foreground fill-secondary-foreground";
+          default:
+            return "gap-[4.5px] font-semibold";
+        }
+      };
+
+      const productStatusLabel = getProductStatusLabel();
 
       return (
-        <Badge
-          variant={`${status === "OUT_OF_STOCK" ? "secondary" : "default"}`}
-          className={`gap-[4.5px] font-semibold`}
-        >
-          <CircleIcon
-            className={`${status === "OUT_OF_STOCK" ? "fill-secondary-foreground" : "fill-primary-foreground"} size-2!`}
-          />
-          {statusLabel}
+        <Badge className={getProductBadgeClassName()}>
+          <CircleIcon className="size-2! fill-inherit" />
+          {productStatusLabel}
         </Badge>
       );
     },

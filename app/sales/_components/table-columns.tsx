@@ -2,14 +2,19 @@
 
 import { Button } from "@/app/_components/ui/button";
 import type { SaleDTO } from "@/app/_data/sale/get-sales";
+import { dateFormatter } from "@/app/_helpers/date-formatter";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontalIcon } from "lucide-react";
 
 export const saleTableColumns: ColumnDef<SaleDTO>[] = [
   {
-    header: "Produtoss",
+    header: "Produtos",
     accessorKey: "saleProductsNames",
+    cell: ({ row }) => {
+      const { saleProductsNames } = row.original;
+      return row.original.saleProductsNames;
+    },
   },
   {
     header: "Quantidade de produtos",
@@ -19,18 +24,16 @@ export const saleTableColumns: ColumnDef<SaleDTO>[] = [
     header: "Valor total",
     accessorKey: "totalAmount",
     cell: ({ row }) => {
-      const sale = row.original;
-      return formatNumberToBRL(sale.totalAmount);
+      const { totalAmount } = row.original;
+      return formatNumberToBRL(totalAmount);
     },
   },
   {
     header: "Data",
     accessorKey: "date",
     cell: ({ row }) => {
-      const sale = row.original;
-      return new Intl.DateTimeFormat("pt-BR", {
-        dateStyle: "medium",
-      }).format(new Date(sale.date));
+      const { date } = row.original;
+      return dateFormatter(date);
     },
   },
   {

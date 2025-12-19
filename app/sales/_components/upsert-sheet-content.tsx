@@ -27,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/_components/ui/table";
-import { Product } from "@/app/_generated/prisma/client";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
@@ -39,6 +38,8 @@ import { createSale } from "@/app/_actions/sale/create-sale";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
 import { flattenValidationErrors } from "next-safe-action";
+import type { ProductDTO } from "@/app/_data/product/get-products";
+import { ScrollArea } from "@/app/_components/ui/scroll-area";
 
 const upsertSaleFormSchema = z.object({
   productId: z.uuid("O produto é obrigatório."),
@@ -58,7 +59,7 @@ interface SelectedProduct {
 }
 
 interface UpsertSaleSheetContentProps {
-  products: Product[];
+  products: ProductDTO[];
   options: ComboboxOption[];
   onFinishSaleSuccess: () => void;
 }
@@ -191,7 +192,7 @@ const UpsertSaleSheetContent = ({
   };
 
   return (
-    <SheetContent className="max-w-xl!">
+    <SheetContent className="max-w-2xl!">
       <SheetHeader>
         <SheetTitle>Adicionar nova venda</SheetTitle>
         <SheetDescription>
@@ -248,59 +249,61 @@ const UpsertSaleSheetContent = ({
 
       {Boolean(selectedProducts.length) && (
         <div>
-          <div className="overflow-hidden px-4">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="p-4">Produto</TableHead>
-                  <TableHead className="p-4">Preço unitário</TableHead>
-                  <TableHead className="p-4">Quantidade</TableHead>
-                  <TableHead className="p-4">Total</TableHead>
-                  <TableHead className="p-4">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {selectedProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="p-4">{product.name}</TableCell>
-                    <TableCell className="p-4">
-                      {formatNumberToBRL(product.price)}
-                    </TableCell>
-                    <TableCell className="p-4">{product.quantity}</TableCell>
-                    <TableCell className="p-4">
-                      {formatNumberToBRL(product.price * product.quantity)}
-                    </TableCell>
-                    <TableCell className="p-4">
-                      <SalesActionsDropdownMenu
-                        onRemoveProduct={handleRemoveProductFromState}
-                        product={product}
-                      />
-                    </TableCell>
+          <ScrollArea className="h-[500px] w-full">
+            <div className="px-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="p-4">Produto</TableHead>
+                    <TableHead className="p-4">Preço unitário</TableHead>
+                    <TableHead className="p-4">Quantidade</TableHead>
+                    <TableHead className="p-4">Total</TableHead>
+                    <TableHead className="p-4">Ações</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
+                </TableHeader>
 
-              <TableFooter>
-                <TableRow>
-                  <TableCell colSpan={3} className="p-4">
-                    Total
-                  </TableCell>
-                  <TableCell className="p-4">
-                    {formatNumberToBRL(productsTotal)}
-                  </TableCell>
-                  <TableCell />
-                </TableRow>
-              </TableFooter>
-            </Table>
-          </div>
+                <TableBody>
+                  {selectedProducts.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="p-4">{product.name}</TableCell>
+                      <TableCell className="p-4">
+                        {formatNumberToBRL(product.price)}
+                      </TableCell>
+                      <TableCell className="p-4">{product.quantity}</TableCell>
+                      <TableCell className="p-4">
+                        {formatNumberToBRL(product.price * product.quantity)}
+                      </TableCell>
+                      <TableCell className="p-4">
+                        <SalesActionsDropdownMenu
+                          onRemoveProduct={handleRemoveProductFromState}
+                          product={product}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
 
-          <SheetFooter>
-            <Button onClick={handleFinishSale}>
-              <CheckIcon className="size-5" />
-              Finalizar venda
-            </Button>
-          </SheetFooter>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={3} className="p-4">
+                      Total
+                    </TableCell>
+                    <TableCell className="p-4">
+                      {formatNumberToBRL(productsTotal)}
+                    </TableCell>
+                    <TableCell />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </div>
+
+            <SheetFooter>
+              <Button onClick={handleFinishSale}>
+                <CheckIcon className="size-5" />
+                Finalizar venda
+              </Button>
+            </SheetFooter>
+          </ScrollArea>
         </div>
       )}
     </SheetContent>
