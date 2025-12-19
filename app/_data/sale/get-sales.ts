@@ -27,33 +27,25 @@ export const getSales = async (): Promise<SaleDTO[]> => {
     },
   });
 
-  const saleProducts = sales
-    .flatMap((sale) => sale.saleProducts)
-    .map((saleProduct) => ({
+  return sales.map((sale) => ({
+    id: sale.id,
+    date: sale.date,
+    saleProductsNames: sale.saleProducts
+      .map((saleProduct) => {
+        return `${saleProduct.product.name} [${saleProduct.quantity}]`;
+      })
+      .join(" • "),
+    totalSaleProducts: sale.saleProducts.length,
+    totalAmount: sale.saleProducts.reduce(
+      (totalAmount, saleProduct) =>
+        (totalAmount += Number(saleProduct.unitPrice) * saleProduct.quantity),
+      0,
+    ),
+    saleProducts: sale.saleProducts.map((saleProduct) => ({
       productId: saleProduct.productId,
       productName: saleProduct.product.name,
       unitPrice: Number(saleProduct.unitPrice),
       quantity: saleProduct.quantity,
-    }));
-
-  const saleTotalAmount = saleProducts.reduce(
-    (totalAmount, saleProduct) =>
-      (totalAmount += saleProduct.unitPrice * saleProduct.quantity),
-    0,
-  );
-
-  const saleProductsNameWithQuantity = saleProducts
-    .map((saleProduct) => {
-      return `${saleProduct.productName} (${saleProduct.quantity})`;
-    })
-    .join(" • ");
-
-  return sales.map((sale) => ({
-    id: sale.id,
-    date: sale.date,
-    saleProductsNames: saleProductsNameWithQuantity,
-    totalSaleProducts: sale.saleProducts.length,
-    totalAmount: saleTotalAmount,
-    saleProducts,
+    })),
   }));
 };

@@ -84,6 +84,7 @@ const UpsertSaleSheetContent = ({
         ? "Venda atualizada com sucesso!"
         : "Venda realizada com sucesso!";
       toast.success(successMessage);
+      setSelectedProducts([]);
       onFinishSaleSuccess();
     },
     onError: () => {
@@ -148,24 +149,24 @@ const UpsertSaleSheetContent = ({
 
           return product;
         });
-      } else {
-        const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
-
-        if (isSelectedProductOutOfStock) {
-          shouldShownOutOfStockError = true;
-          return alreadySelectedProducts;
-        }
-
-        const formattedSelectedProduct = {
-          id: selectedProduct.id,
-          name: selectedProduct.name,
-          price: selectedProduct.price,
-          quantity,
-        };
-
-        shouldResetFormFields = true;
-        return [...alreadySelectedProducts, formattedSelectedProduct];
       }
+
+      const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
+
+      if (isSelectedProductOutOfStock) {
+        shouldShownOutOfStockError = true;
+        return alreadySelectedProducts;
+      }
+
+      const formattedSelectedProduct = {
+        id: selectedProduct.id,
+        name: selectedProduct.name,
+        price: selectedProduct.price,
+        quantity,
+      };
+
+      shouldResetFormFields = true;
+      return [...alreadySelectedProducts, formattedSelectedProduct];
     });
 
     if (shouldShownOutOfStockError) {
@@ -194,13 +195,12 @@ const UpsertSaleSheetContent = ({
 
   const handleFinishSale = () => {
     executeUpsertSale({
-      id: saleId,
-      products: selectedProducts.map((product) => ({
-        id: product.id,
-        quantity: product.quantity,
+      products: selectedProducts.map((selectedProduct) => ({
+        id: selectedProduct.id,
+        quantity: selectedProduct.quantity,
       })),
+      id: saleId,
     });
-    setSelectedProducts([]);
   };
 
   return (

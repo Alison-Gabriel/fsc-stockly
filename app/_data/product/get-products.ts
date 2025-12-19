@@ -2,6 +2,8 @@ import "server-only";
 
 import { db } from "@/app/_lib/prisma";
 
+export type ProductStatusDTO = "IN_STOCK" | "OUT_OF_STOCK";
+
 export interface ProductDTO {
   id: string;
   name: string;
@@ -9,7 +11,7 @@ export interface ProductDTO {
   stock: number;
   createdAt: Date;
   updatedAt: Date;
-  status: "IN_STOCK" | "OUT_OF_STOCK";
+  status: ProductStatusDTO;
 }
 
 export const getProducts = async (): Promise<ProductDTO[]> => {

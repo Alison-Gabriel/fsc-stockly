@@ -22,7 +22,7 @@ export const saleTableColumns: ColumnDef<SaleTableColumn>[] = [
         original: { saleProductsNames },
       },
     }) => {
-      return <span className="truncate">{saleProductsNames}</span>;
+      return <p className="w-xl truncate">{saleProductsNames}</p>;
     },
   },
   {

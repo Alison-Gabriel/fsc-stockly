@@ -13,7 +13,7 @@ export const upsertSale = actionClient
 
     await db.$transaction(async (transaction) => {
       if (isSaleUpdate) {
-        const existingSale = await db.sale.findUnique({
+        const existingSale = await transaction.sale.findUnique({
           where: { id },
           include: {
             saleProducts: true,
@@ -45,7 +45,7 @@ export const upsertSale = actionClient
       });
 
       for (const product of products) {
-        const productFromDb = await db.product.findUnique({
+        const productFromDb = await transaction.product.findUnique({
           where: { id: product.id },
         });
 
