@@ -19,10 +19,17 @@ import {
 import { getDashboardSummary } from "../_data/dashboard/get-summary";
 import { formatNumberToBRL } from "../_helpers/number-to-brl";
 import { numberFormatter } from "../_helpers/number-formatter";
+import RevenueChart from "./_components/revenue-chart";
 
 const HomePage = async () => {
-  const { totalRevenue, todayRevenue, totalSales, totalStock, totalProducts } =
-    await getDashboardSummary();
+  const {
+    totalRevenue,
+    todayRevenue,
+    totalSales,
+    totalStock,
+    totalLast14DaysRevenue,
+    totalProducts,
+  } = await getDashboardSummary();
 
   return (
     <main className="h-full space-y-5">
@@ -72,6 +79,19 @@ const HomePage = async () => {
               {numberFormatter(totalProducts)}
             </SummaryCardValue>
           </SummaryCard>
+        </div>
+
+        <div className="grid grid-cols-2 gap-6">
+          <div className="rounded-md bg-white p-6">
+            <div className="space-y-1">
+              <p className="text-lg font-semibold text-slate-900">Receita</p>
+              <p className="text-sm font-medium text-slate-500">
+                Últimos 14 dias
+              </p>
+            </div>
+
+            <RevenueChart data={totalLast14DaysRevenue} />
+          </div>
         </div>
       </div>
     </main>
