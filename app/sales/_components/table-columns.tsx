@@ -48,7 +48,7 @@ export const saleTableColumns: ColumnDef<SaleTableColumn>[] = [
         original: { date },
       },
     }) => {
-      return dateFormatter(date);
+      return dateFormatter(date, "numeric");
     },
   },
   {

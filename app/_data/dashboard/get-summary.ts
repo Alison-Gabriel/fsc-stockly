@@ -1,4 +1,5 @@
 import { Prisma } from "@/app/_generated/prisma/client";
+import { dateFormatter } from "@/app/_helpers/date-formatter";
 import { db } from "@/app/_lib/prisma";
 
 export interface DayTotalRevenue {
@@ -28,19 +29,16 @@ export const getDashboardSummary = async (): Promise<SummaryDTO> => {
     const endOfDay = new Date(day.setHours(23, 59, 59, 999));
 
     const dayTotalRevenueQuery = Prisma.sql`
-      SELECT SUM("unitPrice" * "quantity")
-      AS "totalRevenue" FROM "SaleProduct"
-      WHERE "createdAt" >= ${startOfDay} AND "createdAt" <= ${endOfDay}
+      SELECT SUM("unitPrice" * "quantity") AS "totalRevenue" FROM "SaleProduct"
+      JOIN "Sale" ON "SaleProduct"."saleId" = "Sale"."id"
+      WHERE "Sale"."date" >= ${startOfDay} AND "Sale"."date" <= ${endOfDay}
     `;
 
     const dayTotalRevenue =
       await db.$queryRaw<{ totalRevenue: number }[]>(dayTotalRevenueQuery);
 
     totalLast14DaysRevenue.push({
-      day: day.toLocaleDateString("pt-BR", {
-        day: "numeric",
-        month: "short",
-      }),
+      day: dateFormatter(day),
       totalRevenue: Number(dayTotalRevenue[0].totalRevenue),
     });
   }
@@ -58,9 +56,9 @@ export const getDashboardSummary = async (): Promise<SummaryDTO> => {
   const endOfDay = new Date(new Date().setHours(23, 59, 59, 999));
 
   const getTodayRevenueQuery = Prisma.sql`
-    SELECT SUM("unitPrice" * "quantity") 
-    AS "todayRevenue" FROM "SaleProduct" 
-    WHERE "createdAt" >= ${startOfDay} AND "createdAt" <= ${endOfDay};
+    SELECT SUM("unitPrice" * "quantity") AS "todayRevenue" FROM "SaleProduct"
+    JOIN "Sale" ON "SaleProduct"."saleId" = "Sale"."id"
+    WHERE "Sale"."date" >= ${startOfDay} AND "Sale"."date" <= ${endOfDay}
   `;
 
   const todayRevenuePromise =

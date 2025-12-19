@@ -1,6 +1,10 @@
-export const dateFormatter = (originalDate: Date) => {
+export const dateFormatter = (
+  originalDate: Date,
+  yearStyle?: "numeric" | "2-digit",
+) => {
   return new Intl.DateTimeFormat("pt-BR", {
-    dateStyle: "medium",
-    timeStyle: "short",
+    day: "numeric",
+    month: "short",
+    year: yearStyle,
   }).format(originalDate);
 };
