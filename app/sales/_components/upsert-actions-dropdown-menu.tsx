@@ -21,8 +21,8 @@ const UpsertSaleActionsDropdownMenu = ({
   product,
   onRemoveProduct,
 }: UpsertSaleActionsDropdownMenuProps) => {
-  const handleCopyToClipboard = (productId: string) => {
-    navigator.clipboard.writeText(productId);
+  const handleCopyIdToClipboard = () => {
+    navigator.clipboard.writeText(product.id);
   };
 
   return (
@@ -37,10 +37,7 @@ const UpsertSaleActionsDropdownMenu = ({
         <DropdownMenuLabel>Ações</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem
-          className="gap-1.5"
-          onClick={() => handleCopyToClipboard(product.id)}
-        >
+        <DropdownMenuItem className="gap-1.5" onClick={handleCopyIdToClipboard}>
           <ClipboardCopyIcon className="size-4" />
           Copiar ID
         </DropdownMenuItem>
