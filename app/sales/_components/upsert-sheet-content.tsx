@@ -187,10 +187,11 @@ const UpsertSaleSheetContent = ({
         quantity: product.quantity,
       })),
     });
+    setSelectedProducts([]);
   };
 
   return (
-    <SheetContent className="max-w-3xl!">
+    <SheetContent className="max-w-xl!">
       <SheetHeader>
         <SheetTitle>Adicionar nova venda</SheetTitle>
         <SheetDescription>
