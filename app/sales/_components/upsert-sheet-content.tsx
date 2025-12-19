@@ -32,7 +32,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import SalesActionsDropdownMenu from "./actions-dropdown-menu";
+import UpsertSaleActionsDropdownMenu from "./upsert-actions-dropdown-menu";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import { createSale } from "@/app/_actions/sale/create-sale";
 import { toast } from "sonner";
@@ -274,7 +274,7 @@ const UpsertSaleSheetContent = ({
                         {formatNumberToBRL(product.price * product.quantity)}
                       </TableCell>
                       <TableCell className="p-4">
-                        <SalesActionsDropdownMenu
+                        <UpsertSaleActionsDropdownMenu
                           onRemoveProduct={handleRemoveProductFromState}
                           product={product}
                         />
