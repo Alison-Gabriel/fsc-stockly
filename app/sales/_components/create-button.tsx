@@ -28,7 +28,7 @@ const CreateSaleButton = ({
       <SheetTrigger asChild>
         <Button>
           <PlusIcon className="size-5" />
-          Nova venda
+          Adicionar venda
         </Button>
       </SheetTrigger>
 

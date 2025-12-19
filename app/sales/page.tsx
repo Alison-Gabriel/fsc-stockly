@@ -1,3 +1,9 @@
+import Header, {
+  HeaderLeft,
+  HeaderRight,
+  HeaderSubtitle,
+  HeaderTitle,
+} from "../_components/header";
 import { ComboboxOption } from "../_components/ui/combobox";
 import { DataTable } from "../_components/ui/data-table";
 import { getProducts } from "../_data/product/get-products";
@@ -27,17 +33,19 @@ const SalesPage = async () => {
 
   return (
     <main className="h-full space-y-8">
-      <header className="flex w-full items-center justify-between">
-        <div className="space-y-2">
-          <p className="text-primary text-xs font-semibold">Gestão de vendas</p>
-          <h1 className="text-xl font-semibold">Vendas</h1>
-        </div>
+      <Header>
+        <HeaderLeft>
+          <HeaderSubtitle>Vendas</HeaderSubtitle>
+          <HeaderTitle>Gestão de vendas</HeaderTitle>
+        </HeaderLeft>
 
-        <CreateSaleButton
-          products={products}
-          productsOptions={productsOptions}
-        />
-      </header>
+        <HeaderRight>
+          <CreateSaleButton
+            products={products}
+            productsOptions={productsOptions}
+          />
+        </HeaderRight>
+      </Header>
 
       <DataTable columns={saleTableColumns} data={tableData} />
     </main>
