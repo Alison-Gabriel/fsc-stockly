@@ -10,6 +10,7 @@ const SalesPage = async () => {
   const productsOptions: ComboboxOption[] = products.map((product) => ({
     value: product.id,
     label: product.name,
+    stock: product.stock,
   }));
 
   return (

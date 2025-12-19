@@ -18,6 +18,7 @@ import { cn } from "@/app/_lib/utils";
 export interface ComboboxOption {
   value: string;
   label: string;
+  stock: number;
 }
 
 interface ComboboxProps {
@@ -50,16 +51,20 @@ export const Combobox = ({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+
+      <PopoverContent className="w-xs p-0">
         <Command>
-          <CommandInput placeholder="Search option..." />
+          <CommandInput placeholder="Procure um produto..." />
+
           <CommandList>
-            <CommandEmpty>No option found.</CommandEmpty>
+            <CommandEmpty>Nenhum produto encontrado.</CommandEmpty>
+
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
                   value={option.value}
+                  disabled={option.stock <= 0}
                   onSelect={(currentValue) => {
                     onChange(currentValue === value ? "" : currentValue);
                     setOpen(false);
