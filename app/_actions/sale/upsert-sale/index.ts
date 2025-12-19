@@ -1,15 +1,42 @@
 "use server";
 
 import { db } from "@/app/_lib/prisma";
-import { createSaleSchema } from "./schema";
+import { upsertSaleSchema } from "./schema";
 import { revalidatePath } from "next/cache";
 import { actionClient } from "@/app/_lib/safe-action";
 import { returnValidationErrors } from "next-safe-action";
 
-export const createSale = actionClient
-  .inputSchema(createSaleSchema)
-  .action(async ({ parsedInput: { products } }) => {
+export const upsertSale = actionClient
+  .inputSchema(upsertSaleSchema)
+  .action(async ({ parsedInput: { products, id } }) => {
+    const isSaleUpdate = Boolean(id);
+
     await db.$transaction(async (transaction) => {
+      if (isSaleUpdate) {
+        const existingSale = await db.sale.findUnique({
+          where: { id },
+          include: {
+            saleProducts: true,
+          },
+        });
+        if (!existingSale) return;
+
+        await transaction.sale.delete({
+          where: { id },
+        });
+
+        for (const saleProduct of existingSale.saleProducts) {
+          await transaction.product.update({
+            where: { id: saleProduct.productId },
+            data: {
+              stock: {
+                increment: saleProduct.quantity,
+              },
+            },
+          });
+        }
+      }
+
       const sale = await transaction.sale.create({
         data: {
           date: new Date(),
@@ -23,14 +50,14 @@ export const createSale = actionClient
 
         const isProductNotFounded = !productFromDb;
         if (isProductNotFounded) {
-          returnValidationErrors(createSaleSchema, {
+          returnValidationErrors(upsertSaleSchema, {
             _errors: ["Product is not found."],
           });
         }
 
         const isProductOutOfStock = product.quantity > productFromDb.stock;
         if (isProductOutOfStock) {
-          returnValidationErrors(createSaleSchema, {
+          returnValidationErrors(upsertSaleSchema, {
             _errors: ["Product is out of stock."],
           });
         }
@@ -56,4 +83,5 @@ export const createSale = actionClient
     });
 
     revalidatePath("/products");
+    revalidatePath("/sales");
   });

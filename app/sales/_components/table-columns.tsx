@@ -3,15 +3,25 @@
 import type { SaleDTO } from "@/app/_data/sale/get-sales";
 import { dateFormatter } from "@/app/_helpers/date-formatter";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import SalesActionsDropdownMenu from "./actions-dropdown-menu";
+import type { ProductDTO } from "@/app/_data/product/get-products";
+import type { ComboboxOption } from "@/app/_components/ui/combobox";
 
-export const saleTableColumns: ColumnDef<SaleDTO>[] = [
+interface SaleTableColumn extends SaleDTO {
+  products: ProductDTO[];
+  productsOptions: ComboboxOption[];
+}
+
+export const saleTableColumns: ColumnDef<SaleTableColumn>[] = [
   {
     header: "Produtos",
     accessorKey: "saleProductsNames",
-    cell: ({ row }) => {
-      const { saleProductsNames } = row.original;
+    cell: ({
+      row: {
+        original: { saleProductsNames },
+      },
+    }) => {
       return <span className="truncate">{saleProductsNames}</span>;
     },
   },
@@ -22,24 +32,35 @@ export const saleTableColumns: ColumnDef<SaleDTO>[] = [
   {
     header: "Valor total",
     accessorKey: "totalAmount",
-    cell: ({ row }) => {
-      const { totalAmount } = row.original;
+    cell: ({
+      row: {
+        original: { totalAmount },
+      },
+    }) => {
       return formatNumberToBRL(totalAmount);
     },
   },
   {
     header: "Data",
     accessorKey: "date",
-    cell: ({ row }) => {
-      const { date } = row.original;
+    cell: ({
+      row: {
+        original: { date },
+      },
+    }) => {
       return dateFormatter(date);
     },
   },
   {
     header: "Ações",
-    cell: ({ row }) => {
-      const sale = row.original;
-      return <SalesActionsDropdownMenu sale={sale} />;
+    cell: ({ row: { original: sale } }) => {
+      return (
+        <SalesActionsDropdownMenu
+          products={sale.products}
+          productsOptions={sale.productsOptions}
+          sale={sale}
+        />
+      );
     },
   },
 ];

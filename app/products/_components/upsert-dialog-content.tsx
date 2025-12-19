@@ -36,19 +36,18 @@ interface UpsertProductDialogContentProps {
 }
 
 const UpsertProductDialogContent = ({
-  defaultValues,
+  defaultValues = { name: "", price: 0, stock: 0 },
   closeUpsertDialog,
 }: UpsertProductDialogContentProps) => {
   const isProductBeingEditing = Boolean(defaultValues);
-  const formDefaultValues = isProductBeingEditing
-    ? defaultValues
-    : { name: "", price: 0, stock: 0 };
 
   const form = useForm<UpsertProductSchema>({
     resolver: zodResolver(upsertProductSchema),
     shouldUnregister: true,
-    defaultValues: formDefaultValues,
+    defaultValues: defaultValues,
   });
+
+  console.log({ defaultValues });
 
   const { execute: executeUpsertProduct } = useAction(upsertProduct, {
     onSuccess: () => {

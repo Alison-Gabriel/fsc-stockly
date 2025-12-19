@@ -34,10 +34,9 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import UpsertSaleActionsDropdownMenu from "./upsert-actions-dropdown-menu";
 import { CheckIcon, PlusIcon } from "lucide-react";
-import { createSale } from "@/app/_actions/sale/create-sale";
+import { upsertSale } from "@/app/_actions/sale/upsert-sale";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
-import { flattenValidationErrors } from "next-safe-action";
 import type { ProductDTO } from "@/app/_data/product/get-products";
 import { ScrollArea } from "@/app/_components/ui/scroll-area";
 
@@ -59,28 +58,39 @@ interface SelectedProduct {
 }
 
 interface UpsertSaleSheetContentProps {
+  saleId?: string;
   products: ProductDTO[];
   options: ComboboxOption[];
+  defaultSelectedProducts?: SelectedProduct[];
   onFinishSaleSuccess: () => void;
 }
 
 const UpsertSaleSheetContent = ({
+  saleId,
   products,
   options,
+  defaultSelectedProducts = [],
   onFinishSaleSuccess,
 }: UpsertSaleSheetContentProps) => {
-  const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>(
-    [],
+  const isEditingSale = Boolean(saleId);
+
+  const [selectedProducts, setSelectedProducts] = useState(
+    defaultSelectedProducts,
   );
 
-  const { execute: executeCreateSale } = useAction(createSale, {
+  const { execute: executeUpsertSale } = useAction(upsertSale, {
     onSuccess: () => {
-      toast.success("Venda realizada com sucesso!");
+      const successMessage = isEditingSale
+        ? "Venda editada com sucesso!"
+        : "Venda realizada com sucesso!";
+      toast.success(successMessage);
       onFinishSaleSuccess();
     },
-    onError: ({ error: { validationErrors, serverError } }) => {
-      const flattenedError = flattenValidationErrors(validationErrors);
-      toast.error(serverError ?? flattenedError.formErrors[0]);
+    onError: () => {
+      const errorMessage = isEditingSale
+        ? "Erro ao editar venda, por favor, tente novamente."
+        : "Erro ao realizar venda, por favor, tente novamente.";
+      toast.error(errorMessage);
     },
   });
 
@@ -182,7 +192,8 @@ const UpsertSaleSheetContent = ({
   };
 
   const handleFinishSale = () => {
-    executeCreateSale({
+    executeUpsertSale({
+      id: saleId,
       products: selectedProducts.map((product) => ({
         id: product.id,
         quantity: product.quantity,
@@ -194,7 +205,9 @@ const UpsertSaleSheetContent = ({
   return (
     <SheetContent className="max-w-2xl!">
       <SheetHeader>
-        <SheetTitle>Adicionar nova venda</SheetTitle>
+        <SheetTitle>
+          {isEditingSale ? "Editar venda" : "Adicionar nova venda"}
+        </SheetTitle>
         <SheetDescription>
           Insira as informações da venda abaixo
         </SheetDescription>
@@ -300,7 +313,7 @@ const UpsertSaleSheetContent = ({
             <SheetFooter>
               <Button onClick={handleFinishSale}>
                 <CheckIcon className="size-5" />
-                Finalizar venda
+                {isEditingSale ? "Editar venda" : "Finalizar venda"}
               </Button>
             </SheetFooter>
           </ScrollArea>

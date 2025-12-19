@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog } from "@/app/_components/ui/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,13 +31,24 @@ import type { SaleDTO } from "@/app/_data/sale/get-sales";
 import { useAction } from "next-safe-action/hooks";
 import { deleteSale } from "@/app/_actions/sale/delete-sale";
 import { toast } from "sonner";
+import { Sheet, SheetTrigger } from "@/app/_components/ui/sheet";
+import UpsertSaleSheetContent from "./upsert-sheet-content";
+import { ProductDTO } from "@/app/_data/product/get-products";
+import { ComboboxOption } from "@/app/_components/ui/combobox";
 
 interface SalesActionsDropdownMenu {
-  sale: Pick<SaleDTO, "id">;
+  sale: Pick<SaleDTO, "id" | "saleProducts">;
+  products: ProductDTO[];
+  productsOptions: ComboboxOption[];
 }
 
-const SalesActionsDropdownMenu = ({ sale }: SalesActionsDropdownMenu) => {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+const SalesActionsDropdownMenu = ({
+  sale,
+  products,
+  productsOptions,
+}: SalesActionsDropdownMenu) => {
+  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+
   const { execute: executeDeleteAction } = useAction(deleteSale, {
     onSuccess: () => {
       toast.success("Venda excluida com sucesso!");
@@ -56,8 +66,12 @@ const SalesActionsDropdownMenu = ({ sale }: SalesActionsDropdownMenu) => {
     executeDeleteAction({ id: sale.id });
   };
 
+  const handleCloseEditSheet = () => {
+    setIsEditSheetOpen(false);
+  };
+
   return (
-    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+    <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
       <AlertDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -78,10 +92,12 @@ const SalesActionsDropdownMenu = ({ sale }: SalesActionsDropdownMenu) => {
               Copiar ID
             </DropdownMenuItem>
 
-            <DropdownMenuItem className="gap-1.5">
-              <EditIcon className="size-4" />
-              Editar
-            </DropdownMenuItem>
+            <SheetTrigger asChild>
+              <DropdownMenuItem className="gap-1.5">
+                <EditIcon className="size-4" />
+                Editar
+              </DropdownMenuItem>
+            </SheetTrigger>
 
             <AlertDialogTrigger asChild>
               <DropdownMenuItem className="gap-1.5">
@@ -109,7 +125,20 @@ const SalesActionsDropdownMenu = ({ sale }: SalesActionsDropdownMenu) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Dialog>
+
+      <UpsertSaleSheetContent
+        saleId={sale.id}
+        products={products}
+        options={productsOptions}
+        defaultSelectedProducts={sale.saleProducts.map((saleProduct) => ({
+          id: saleProduct.productId,
+          name: saleProduct.productName,
+          price: saleProduct.unitPrice,
+          quantity: saleProduct.quantity,
+        }))}
+        onFinishSaleSuccess={handleCloseEditSheet}
+      />
+    </Sheet>
   );
 };
 
