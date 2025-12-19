@@ -7,21 +7,28 @@ import { useState } from "react";
 import UpsertProductDialogContent from "./upsert-dialog-content";
 
 const CreateProductButton = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCreateProductDialogOpen, setIsCreateProductDialogOpen] =
+    useState(false);
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
+  const handleCloseCreateProductDialog = () => {
+    setIsCreateProductDialogOpen(false);
   };
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog
+      open={isCreateProductDialogOpen}
+      onOpenChange={setIsCreateProductDialogOpen}
+    >
       <DialogTrigger asChild>
-        <Button size="sm">
+        <Button>
           <PlusIcon className="size-5" />
           Novo produto
         </Button>
       </DialogTrigger>
-      <UpsertProductDialogContent closeUpsertDialog={handleCloseDialog} />
+
+      <UpsertProductDialogContent
+        closeUpsertDialog={handleCloseCreateProductDialog}
+      />
     </Dialog>
   );
 };

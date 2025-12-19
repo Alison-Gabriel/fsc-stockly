@@ -10,11 +10,15 @@ const ProductsPage = async () => {
     <main className="h-full space-y-8">
       <header className="flex w-full items-center justify-between">
         <div className="space-y-2">
-          <p className="text-primary text-xs font-semibold">Produtos</p>
-          <h1 className="text-xl font-semibold">Gestão de produtos</h1>
+          <p className="text-primary text-xs font-semibold">
+            Gestão de produtos
+          </p>
+          <h1 className="text-xl font-semibold">Produtos</h1>
         </div>
+
         <CreateProductButton />
       </header>
+
       <DataTable columns={productsColumns} data={products} />
     </main>
   );

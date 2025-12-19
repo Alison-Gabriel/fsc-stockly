@@ -29,7 +29,7 @@ const DeleteProductDialogContent = ({
     },
   });
 
-  const handleDeleteProductContinue = () => {
+  const handleConfirmDeletion = () => {
     executeDeleteProduct({ id: productId });
   };
 
@@ -45,7 +45,7 @@ const DeleteProductDialogContent = ({
 
       <AlertDialogFooter>
         <AlertDialogCancel>Cancelar</AlertDialogCancel>
-        <AlertDialogAction onClick={handleDeleteProductContinue}>
+        <AlertDialogAction onClick={handleConfirmDeletion}>
           Continuar
         </AlertDialogAction>
       </AlertDialogFooter>

@@ -15,8 +15,11 @@ export const productsColumns: ColumnDef<ProductDTO>[] = [
   {
     accessorKey: "price",
     header: "Valor unitário",
-    cell: ({ row }) => {
-      const { price } = row.original;
+    cell: ({
+      row: {
+        original: { price },
+      },
+    }) => {
       return formatNumberToBRL(price);
     },
   },
@@ -27,9 +30,11 @@ export const productsColumns: ColumnDef<ProductDTO>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => {
-      const { status } = row.original;
-
+    cell: ({
+      row: {
+        original: { status },
+      },
+    }) => {
       const getProductStatusLabel = () => {
         if (status === "IN_STOCK") {
           return "Em estoque";
@@ -63,8 +68,7 @@ export const productsColumns: ColumnDef<ProductDTO>[] = [
   {
     accessorKey: "actions",
     header: "Ações",
-    cell: ({ row }) => {
-      const product = row.original;
+    cell: ({ row: { original: product } }) => {
       return <ProductActionsDropdownMenu product={product} />;
     },
   },

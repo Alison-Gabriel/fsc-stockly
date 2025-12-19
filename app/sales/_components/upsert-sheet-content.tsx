@@ -72,7 +72,7 @@ const UpsertSaleSheetContent = ({
   defaultSelectedProducts = [],
   onFinishSaleSuccess,
 }: UpsertSaleSheetContentProps) => {
-  const isEditingSale = Boolean(saleId);
+  const isUpdatingSale = Boolean(saleId);
 
   const [selectedProducts, setSelectedProducts] = useState(
     defaultSelectedProducts,
@@ -80,15 +80,15 @@ const UpsertSaleSheetContent = ({
 
   const { execute: executeUpsertSale } = useAction(upsertSale, {
     onSuccess: () => {
-      const successMessage = isEditingSale
-        ? "Venda editada com sucesso!"
+      const successMessage = isUpdatingSale
+        ? "Venda atualizada com sucesso!"
         : "Venda realizada com sucesso!";
       toast.success(successMessage);
       onFinishSaleSuccess();
     },
     onError: () => {
-      const errorMessage = isEditingSale
-        ? "Erro ao editar venda, por favor, tente novamente."
+      const errorMessage = isUpdatingSale
+        ? "Erro ao atualizar venda, por favor, tente novamente."
         : "Erro ao realizar venda, por favor, tente novamente.";
       toast.error(errorMessage);
     },
@@ -107,9 +107,9 @@ const UpsertSaleSheetContent = ({
     productId,
     quantity,
   }: UpsertSaleFormSchema) => {
-    const selectedProduct = products.find(
-      (product) => product.id === productId,
-    );
+    const selectedProduct = products.find((product) => {
+      return product.id === productId;
+    });
 
     const isSelectedProductNotExistsOnDatabase = !selectedProduct;
     if (isSelectedProductNotExistsOnDatabase) return;
@@ -118,9 +118,9 @@ const UpsertSaleSheetContent = ({
     let shouldResetFormFields = false;
 
     setSelectedProducts((alreadySelectedProducts) => {
-      const existingProduct = alreadySelectedProducts.find(
-        (product) => product.id === selectedProduct.id,
-      );
+      const existingProduct = alreadySelectedProducts.find((product) => {
+        return product.id === selectedProduct.id;
+      });
       const isSelectedProductAlreadySelected = Boolean(existingProduct);
 
       if (isSelectedProductAlreadySelected) {
@@ -145,26 +145,27 @@ const UpsertSaleSheetContent = ({
               quantity: existingProduct.quantity + quantity,
             };
           }
+
           return product;
         });
+      } else {
+        const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
+
+        if (isSelectedProductOutOfStock) {
+          shouldShownOutOfStockError = true;
+          return alreadySelectedProducts;
+        }
+
+        const formattedSelectedProduct = {
+          id: selectedProduct.id,
+          name: selectedProduct.name,
+          price: selectedProduct.price,
+          quantity,
+        };
+
+        shouldResetFormFields = true;
+        return [...alreadySelectedProducts, formattedSelectedProduct];
       }
-
-      const isSelectedProductOutOfStock = quantity > selectedProduct.stock;
-
-      if (isSelectedProductOutOfStock) {
-        shouldShownOutOfStockError = true;
-        return alreadySelectedProducts;
-      }
-
-      const formattedSelectedProduct = {
-        id: selectedProduct.id,
-        name: selectedProduct.name,
-        price: Number(selectedProduct.price),
-        quantity,
-      };
-
-      shouldResetFormFields = true;
-      return [...alreadySelectedProducts, formattedSelectedProduct];
     });
 
     if (shouldShownOutOfStockError) {
@@ -206,7 +207,7 @@ const UpsertSaleSheetContent = ({
     <SheetContent className="max-w-2xl!">
       <SheetHeader>
         <SheetTitle>
-          {isEditingSale ? "Editar venda" : "Adicionar nova venda"}
+          {isUpdatingSale ? "Editar venda" : "Adicionar nova venda"}
         </SheetTitle>
         <SheetDescription>
           Insira as informações da venda abaixo
@@ -313,7 +314,7 @@ const UpsertSaleSheetContent = ({
             <SheetFooter>
               <Button onClick={handleFinishSale}>
                 <CheckIcon className="size-5" />
-                {isEditingSale ? "Editar venda" : "Finalizar venda"}
+                {isUpdatingSale ? "Editar venda" : "Finalizar venda"}
               </Button>
             </SheetFooter>
           </ScrollArea>

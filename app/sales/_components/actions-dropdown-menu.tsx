@@ -47,9 +47,9 @@ const SalesActionsDropdownMenu = ({
   products,
   productsOptions,
 }: SalesActionsDropdownMenu) => {
-  const [isEditSheetOpen, setIsEditSheetOpen] = useState(false);
+  const [isUpdateSheetOpen, setIsUpdateSheetOpen] = useState(false);
 
-  const { execute: executeDeleteAction } = useAction(deleteSale, {
+  const { execute: executeDeleteSale } = useAction(deleteSale, {
     onSuccess: () => {
       toast.success("Venda excluida com sucesso!");
     },
@@ -63,15 +63,15 @@ const SalesActionsDropdownMenu = ({
   };
 
   const handleConfirmDeletion = () => {
-    executeDeleteAction({ id: sale.id });
+    executeDeleteSale({ id: sale.id });
   };
 
-  const handleCloseEditSheet = () => {
-    setIsEditSheetOpen(false);
+  const handleCloseUpdateSheet = () => {
+    setIsUpdateSheetOpen(false);
   };
 
   return (
-    <Sheet open={isEditSheetOpen} onOpenChange={setIsEditSheetOpen}>
+    <Sheet open={isUpdateSheetOpen} onOpenChange={setIsUpdateSheetOpen}>
       <AlertDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -136,7 +136,7 @@ const SalesActionsDropdownMenu = ({
           price: saleProduct.unitPrice,
           quantity: saleProduct.quantity,
         }))}
-        onFinishSaleSuccess={handleCloseEditSheet}
+        onFinishSaleSuccess={handleCloseUpdateSheet}
       />
     </Sheet>
   );

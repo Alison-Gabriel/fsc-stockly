@@ -7,11 +7,13 @@ import { saleTableColumns } from "./_components/table-columns";
 
 const SalesPage = async () => {
   const [products, sales] = await Promise.all([getProducts(), getSales()]);
+
   const productsOptions: ComboboxOption[] = products.map((product) => ({
     value: product.id,
     label: product.name,
     stock: product.stock,
   }));
+
   const tableData = sales.map((sale) => ({
     id: sale.id,
     date: sale.date,
@@ -27,14 +29,16 @@ const SalesPage = async () => {
     <main className="h-full space-y-8">
       <header className="flex w-full items-center justify-between">
         <div className="space-y-2">
-          <p className="text-primary text-xs font-semibold">Vendas</p>
-          <h1 className="text-xl font-semibold">Gestão de vendas</h1>
+          <p className="text-primary text-xs font-semibold">Gestão de vendas</p>
+          <h1 className="text-xl font-semibold">Vendas</h1>
         </div>
+
         <CreateSaleButton
           products={products}
           productsOptions={productsOptions}
         />
       </header>
+
       <DataTable columns={saleTableColumns} data={tableData} />
     </main>
   );

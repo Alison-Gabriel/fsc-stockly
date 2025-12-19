@@ -32,18 +32,22 @@ interface ProductActionsDropdownMenu {
 const ProductActionsDropdownMenu = ({
   product,
 }: ProductActionsDropdownMenu) => {
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isUpdateProductDialogOpen, setIsUpdateProductDialogOpen] =
+    useState(false);
 
-  const handleCopyToClipboard = () => {
+  const handleCopyIdToClipboard = () => {
     navigator.clipboard.writeText(product.id);
   };
 
-  const handleCloseEditDialog = () => {
-    setIsEditDialogOpen(false);
+  const handleCloseUpdateProductDialog = () => {
+    setIsUpdateProductDialogOpen(false);
   };
 
   return (
-    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+    <Dialog
+      open={isUpdateProductDialogOpen}
+      onOpenChange={setIsUpdateProductDialogOpen}
+    >
       <AlertDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,7 +62,7 @@ const ProductActionsDropdownMenu = ({
 
             <DropdownMenuItem
               className="gap-1.5"
-              onClick={handleCopyToClipboard}
+              onClick={handleCopyIdToClipboard}
             >
               <ClipboardCopyIcon className="size-4" />
               Copiar ID
@@ -81,7 +85,7 @@ const ProductActionsDropdownMenu = ({
         </DropdownMenu>
 
         <UpsertProductDialogContent
-          closeUpsertDialog={handleCloseEditDialog}
+          closeUpsertDialog={handleCloseUpdateProductDialog}
           defaultValues={{
             price: product.price,
             name: product.name,

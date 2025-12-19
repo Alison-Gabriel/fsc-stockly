@@ -17,16 +17,16 @@ const CreateSaleButton = ({
   products,
   productsOptions,
 }: CreateSaleButtonProps) => {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isCreateSaleSheetOpen, setIsCreateSaleSheetOpen] = useState(false);
 
-  const handleSheetClose = () => {
-    setIsSheetOpen(false);
+  const handleCloseCreateSaleSheet = () => {
+    setIsCreateSaleSheetOpen(false);
   };
 
   return (
-    <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+    <Sheet open={isCreateSaleSheetOpen} onOpenChange={setIsCreateSaleSheetOpen}>
       <SheetTrigger asChild>
-        <Button size="sm">
+        <Button>
           <PlusIcon className="size-5" />
           Nova venda
         </Button>
@@ -35,7 +35,7 @@ const CreateSaleButton = ({
       <UpsertSaleSheetContent
         products={products}
         options={productsOptions}
-        onFinishSaleSuccess={handleSheetClose}
+        onFinishSaleSuccess={handleCloseCreateSaleSheet}
       />
     </Sheet>
   );

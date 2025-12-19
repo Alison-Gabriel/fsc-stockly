@@ -39,7 +39,7 @@ const UpsertProductDialogContent = ({
   defaultValues = { name: "", price: 0, stock: 0 },
   closeUpsertDialog,
 }: UpsertProductDialogContentProps) => {
-  const isProductBeingEditing = Boolean(defaultValues);
+  const isUpdatingProduct = Boolean(defaultValues.id);
 
   const form = useForm<UpsertProductSchema>({
     resolver: zodResolver(upsertProductSchema),
@@ -47,29 +47,25 @@ const UpsertProductDialogContent = ({
     defaultValues: defaultValues,
   });
 
-  console.log({ defaultValues });
-
   const { execute: executeUpsertProduct } = useAction(upsertProduct, {
     onSuccess: () => {
-      const successMessage = isProductBeingEditing
+      const successMessage = isUpdatingProduct
         ? "Produto editado com sucesso!"
         : "Produto criado com sucesso!";
-
       closeUpsertDialog();
       toast.success(successMessage);
     },
     onError: () => {
-      const errorMessage = isProductBeingEditing
+      const errorMessage = isUpdatingProduct
         ? "Erro ao editar produto, por favor, tente novamente."
         : "Erro ao adicionar produto, por favor, tente novamente.";
-
       toast.error(errorMessage);
     },
   });
 
   const handleUpsertProduct = (data: UpsertProductSchema) => {
     executeUpsertProduct({
-      id: defaultValues?.id,
+      id: defaultValues.id,
       name: data.name,
       price: data.price,
       stock: data.stock,
@@ -80,7 +76,7 @@ const UpsertProductDialogContent = ({
     <DialogContent className="w-sm">
       <DialogHeader>
         <DialogTitle>
-          {isProductBeingEditing ? "Editar produto" : "Adicionar produto"}
+          {isUpdatingProduct ? "Atualizar produto" : "Adicionar produto"}
         </DialogTitle>
         <DialogDescription>Insira as informações abaixo.</DialogDescription>
       </DialogHeader>
@@ -152,18 +148,13 @@ const UpsertProductDialogContent = ({
 
           <DialogFooter className="grid grid-cols-2 gap-3">
             <DialogClose asChild>
-              <Button type="reset" variant="outline" size="sm">
+              <Button type="reset" variant="secondary">
                 Cancelar
               </Button>
             </DialogClose>
 
-            <Button
-              disabled={form.formState.isSubmitting}
-              type="submit"
-              size="sm"
-              className="font-semibold"
-            >
-              {isProductBeingEditing ? "Editar" : "Cadastrar"}
+            <Button disabled={form.formState.isSubmitting} type="submit">
+              {isUpdatingProduct ? "Atualizar" : "Adicionar"}
               {form.formState.isSubmitting && (
                 <Loader2Icon className="size-3.5 animate-spin" />
               )}
