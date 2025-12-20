@@ -19,7 +19,6 @@ export interface MostSoldProductDTO {
 }
 
 interface SummaryDTO {
-  totalStock: number;
   totalProducts: number;
   totalLast14DaysRevenue: DayTotalRevenue[];
   mostSoldProducts: MostSoldProductDTO[];
@@ -52,10 +51,6 @@ export const getDashboardSummary = async (): Promise<SummaryDTO> => {
     });
   }
 
-  const totalStockPromise = db.product.aggregate({
-    _sum: { stock: true },
-  });
-
   const totalProductsPromise = db.product.count();
 
   const mostSoldProductsQuery = Prisma.sql`
@@ -77,15 +72,13 @@ export const getDashboardSummary = async (): Promise<SummaryDTO> => {
     }[]
   >(mostSoldProductsQuery);
 
-  const [totalStock, totalProducts, mostSoldProducts] = await Promise.all([
-    totalStockPromise,
+  const [totalProducts, mostSoldProducts] = await Promise.all([
     totalProductsPromise,
     mostSoldProductsPromise,
   ]);
 
   return {
     totalLast14DaysRevenue: totalLast14DaysRevenue,
-    totalStock: Number(totalStock._sum.stock),
     totalProducts,
     mostSoldProducts: mostSoldProducts.map((product) => ({
       productId: product.productId,
