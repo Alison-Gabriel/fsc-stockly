@@ -7,6 +7,8 @@
 generator client {
   provider = "prisma-client"
   output   = "../app/_generated/prisma"
+  generatedFileExtension = "ts"
+  importFileExtension = "ts"
 }
 
 datasource db {
