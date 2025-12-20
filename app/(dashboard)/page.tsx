@@ -5,9 +5,6 @@ import {
   HeaderTitle,
 } from "../_components/header";
 import { SummaryCardSkeleton } from "./_components/summary-card";
-import { getDashboardSummary } from "../_data/dashboard/get-summary";
-import MostSoldProductItem from "./_components/most-sold-product-item";
-import { ScrollArea } from "../_components/ui/scroll-area";
 import TotalRevenueCard from "./_components/total-revenue-card";
 import { Suspense } from "react";
 import TodayRevenueCard from "./_components/today-revenue-card";
@@ -18,10 +15,14 @@ import {
   Last14DaysTotalRevenueCard,
   Last14DaysTotalRevenueCardSkeleton,
 } from "./_components/last-14-days-total-revenue-card";
-import { Skeleton } from "../_components/ui/skeleton";
+import {
+  MostSoldProductsCard,
+  MostSoldProductsCardSkeleton,
+} from "./_components/most-sold-products-card";
+import { getMostSoldProducts } from "../_data/dashboard/get-most-sold-products";
 
 const HomePage = async () => {
-  const { mostSoldProducts } = await getDashboardSummary();
+  const mostSoldProducts = await getMostSoldProducts();
 
   return (
     <main className="h-full space-y-5">
@@ -62,24 +63,9 @@ const HomePage = async () => {
             <Last14DaysTotalRevenueCard />
           </Suspense>
 
-          <div className="h-80 overflow-hidden rounded-md bg-white py-6">
-            <div className="px-6">
-              <p className="text-lg font-semibold text-slate-900">
-                Produtos mais vendidos
-              </p>
-            </div>
-
-            <ScrollArea className="h-full py-6">
-              <div className="space-y-8 px-6">
-                {mostSoldProducts.map((mostSoldProduct) => (
-                  <MostSoldProductItem
-                    key={mostSoldProduct.productId}
-                    product={mostSoldProduct}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+          <Suspense fallback={<MostSoldProductsCardSkeleton />}>
+            <MostSoldProductsCard />
+          </Suspense>
         </div>
       </div>
     </main>

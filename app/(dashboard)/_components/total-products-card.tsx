@@ -9,7 +9,6 @@ import { numberFormatter } from "@/app/_helpers/number-formatter";
 import { getTotalProducts } from "@/app/_data/dashboard/get-total-products";
 
 const TotalProductsCard = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 7000));
   const totalProducts = await getTotalProducts();
 
   return (

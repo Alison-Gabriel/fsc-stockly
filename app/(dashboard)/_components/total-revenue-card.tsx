@@ -9,7 +9,6 @@ import { DollarSign } from "lucide-react";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 
 const TotalRevenueCard = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
   const { totalRevenue } = await getTotalRevenue();
 
   return (

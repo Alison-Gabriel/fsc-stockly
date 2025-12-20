@@ -9,7 +9,6 @@ import { getTotalSales } from "@/app/_data/dashboard/get-total-sales";
 import { numberFormatter } from "@/app/_helpers/number-formatter";
 
 const TotalSalesCard = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 7000));
   const totalSales = await getTotalSales();
 
   return (
