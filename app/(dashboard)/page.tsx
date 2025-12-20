@@ -1,19 +1,11 @@
-import { ShoppingBasket } from "lucide-react";
 import {
   Header,
   HeaderLeft,
   HeaderSubtitle,
   HeaderTitle,
 } from "../_components/header";
-import {
-  SummaryCard,
-  SummaryCardIcon,
-  SummaryCardSkeleton,
-  SummaryCardTitle,
-  SummaryCardValue,
-} from "./_components/summary-card";
+import { SummaryCardSkeleton } from "./_components/summary-card";
 import { getDashboardSummary } from "../_data/dashboard/get-summary";
-import { numberFormatter } from "../_helpers/number-formatter";
 import RevenueChart from "./_components/revenue-chart";
 import MostSoldProductItem from "./_components/most-sold-product-item";
 import { ScrollArea } from "../_components/ui/scroll-area";
@@ -22,9 +14,10 @@ import { Suspense } from "react";
 import TodayRevenueCard from "./_components/today-revenue-card";
 import TotalSalesCard from "./_components/total-sales-card";
 import TotalStockCard from "./_components/total-stock-card";
+import TotalProductsCard from "./_components/total-products-card";
 
 const HomePage = async () => {
-  const { totalLast14DaysRevenue, totalProducts, mostSoldProducts } =
+  const { totalLast14DaysRevenue, mostSoldProducts } =
     await getDashboardSummary();
 
   return (
@@ -56,13 +49,9 @@ const HomePage = async () => {
             <TotalStockCard />
           </Suspense>
 
-          <SummaryCard>
-            <SummaryCardIcon icon={ShoppingBasket} />
-            <SummaryCardTitle>Produtos</SummaryCardTitle>
-            <SummaryCardValue>
-              {numberFormatter(totalProducts)}
-            </SummaryCardValue>
-          </SummaryCard>
+          <Suspense fallback={<SummaryCardSkeleton />}>
+            <TotalProductsCard />
+          </Suspense>
         </div>
 
         <div className="grid h-fit grid-cols-3 gap-6">
