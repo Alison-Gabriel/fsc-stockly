@@ -9,7 +9,6 @@ import {
   HeaderSubtitle,
   HeaderTitle,
 } from "../_components/header";
-import { ScrollArea } from "../_components/ui/scroll-area";
 
 const ProductsPage = async () => {
   const products = await getProducts();

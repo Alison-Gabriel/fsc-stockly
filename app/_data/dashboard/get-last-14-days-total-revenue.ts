@@ -4,7 +4,7 @@ import "server-only";
 import { TotalRevenueDTO } from "./get-total-revenue";
 import { dateFormatter } from "@/app/_helpers/date-formatter";
 
-interface DayTotalRevenueDTO {
+export interface DayTotalRevenueDTO {
   day: string;
   totalRevenue: number;
 }

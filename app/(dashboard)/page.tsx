@@ -19,11 +19,8 @@ import {
   MostSoldProductsCard,
   MostSoldProductsCardSkeleton,
 } from "./_components/most-sold-products-card";
-import { getMostSoldProducts } from "../_data/dashboard/get-most-sold-products";
 
 const HomePage = async () => {
-  const mostSoldProducts = await getMostSoldProducts();
-
   return (
     <main className="h-full space-y-5">
       <Header>

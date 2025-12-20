@@ -6,7 +6,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/app/_components/ui/chart";
-import { DayTotalRevenue } from "@/app/_data/dashboard/get-summary";
+import { DayTotalRevenueDTO } from "@/app/_data/dashboard/get-last-14-days-total-revenue";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
@@ -18,7 +18,7 @@ const chartConfig: ChartConfig = {
 };
 
 interface RevenueChartProps {
-  data: DayTotalRevenue[];
+  data: DayTotalRevenueDTO[];
 }
 
 const RevenueChart = ({ data }: RevenueChartProps) => {
