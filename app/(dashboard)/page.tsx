@@ -1,9 +1,4 @@
-import {
-  CircleDollarSign,
-  DollarSign,
-  Package,
-  ShoppingBasket,
-} from "lucide-react";
+import { CircleDollarSign, Package, ShoppingBasket } from "lucide-react";
 import {
   Header,
   HeaderLeft,
@@ -13,20 +8,21 @@ import {
 import {
   SummaryCard,
   SummaryCardIcon,
+  SummaryCardSkeleton,
   SummaryCardTitle,
   SummaryCardValue,
 } from "./_components/summary-card";
 import { getDashboardSummary } from "../_data/dashboard/get-summary";
-import { formatNumberToBRL } from "../_helpers/number-to-brl";
 import { numberFormatter } from "../_helpers/number-formatter";
 import RevenueChart from "./_components/revenue-chart";
 import MostSoldProductItem from "./_components/most-sold-product-item";
 import { ScrollArea } from "../_components/ui/scroll-area";
+import TotalRevenueCard from "./_components/total-revenue-card";
+import { Suspense } from "react";
+import TodayRevenueCard from "./_components/today-revenue-card";
 
 const HomePage = async () => {
   const {
-    totalRevenue,
-    todayRevenue,
     totalSales,
     totalStock,
     totalLast14DaysRevenue,
@@ -45,21 +41,13 @@ const HomePage = async () => {
 
       <div className="space-y-4">
         <div className="grid grid-cols-2 gap-6">
-          <SummaryCard>
-            <SummaryCardIcon icon={DollarSign} />
-            <SummaryCardTitle>Receita total</SummaryCardTitle>
-            <SummaryCardValue>
-              {formatNumberToBRL(totalRevenue)}
-            </SummaryCardValue>
-          </SummaryCard>
+          <Suspense fallback={<SummaryCardSkeleton />}>
+            <TotalRevenueCard />
+          </Suspense>
 
-          <SummaryCard>
-            <SummaryCardIcon icon={DollarSign} />
-            <SummaryCardTitle>Receita hoje</SummaryCardTitle>
-            <SummaryCardValue>
-              {formatNumberToBRL(todayRevenue)}
-            </SummaryCardValue>
-          </SummaryCard>
+          <Suspense fallback={<SummaryCardSkeleton />}>
+            <TodayRevenueCard />
+          </Suspense>
         </div>
 
         <div className="grid grid-cols-3 gap-6">

@@ -263,7 +263,7 @@ const UpsertSaleSheetContent = ({
 
       {Boolean(selectedProducts.length) && (
         <div>
-          <ScrollArea className="h-[500px] w-full">
+          <ScrollArea className="h-[500px] w-full py-6">
             <div className="px-4">
               <Table>
                 <TableHeader>
