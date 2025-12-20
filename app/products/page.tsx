@@ -9,12 +9,13 @@ import {
   HeaderSubtitle,
   HeaderTitle,
 } from "../_components/header";
+import { ScrollArea } from "../_components/ui/scroll-area";
 
 const ProductsPage = async () => {
   const products = await getProducts();
 
   return (
-    <main className="h-full space-y-5">
+    <main className="h-full space-y-5 overflow-hidden">
       <Header>
         <HeaderLeft>
           <HeaderSubtitle>Produtos</HeaderSubtitle>
@@ -26,7 +27,10 @@ const ProductsPage = async () => {
         </HeaderRight>
       </Header>
 
-      <DataTable columns={productsColumns} data={products} />
+      <DataTable
+        columns={productsColumns}
+        data={[...products, ...products, ...products]}
+      />
     </main>
   );
 };
