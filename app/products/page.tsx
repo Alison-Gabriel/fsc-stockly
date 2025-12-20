@@ -26,10 +26,7 @@ const ProductsPage = async () => {
         </HeaderRight>
       </Header>
 
-      <DataTable
-        columns={productsColumns}
-        data={[...products, ...products, ...products]}
-      />
+      <DataTable columns={productsColumns} data={products} />
     </main>
   );
 };
