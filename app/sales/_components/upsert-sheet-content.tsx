@@ -29,7 +29,7 @@ import {
 } from "@/app/_components/ui/table";
 import { formatNumberToBRL } from "@/app/_helpers/number-to-brl";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import UpsertSaleActionsDropdownMenu from "./upsert-actions-dropdown-menu";
@@ -58,6 +58,7 @@ interface SelectedProduct {
 }
 
 interface UpsertSaleSheetContentProps {
+  isOpen: boolean;
   saleId?: string;
   products: ProductDTO[];
   options: ComboboxOption[];
@@ -67,6 +68,7 @@ interface UpsertSaleSheetContentProps {
 
 const UpsertSaleSheetContent = ({
   saleId,
+  isOpen,
   products,
   options,
   defaultSelectedProducts = [],
@@ -202,6 +204,13 @@ const UpsertSaleSheetContent = ({
       id: saleId,
     });
   };
+
+  useEffect(() => {
+    if (!isOpen) {
+      form.reset();
+      setSelectedProducts(defaultSelectedProducts);
+    }
+  }, [isOpen, form, defaultSelectedProducts]);
 
   return (
     <SheetContent className="max-w-2xl!">

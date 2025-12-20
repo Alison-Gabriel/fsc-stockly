@@ -9,6 +9,7 @@ const eslintConfig = defineConfig([
     rules: {
       "react-hooks/incompatible-library": "off",
       "react-hooks/rules-of-hooks": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   // Override default ignores of eslint-config-next.
