@@ -23,7 +23,7 @@ interface RevenueChartProps {
 
 const RevenueChart = ({ data }: RevenueChartProps) => {
   return (
-    <ChartContainer config={chartConfig} className="max-h-56 w-full">
+    <ChartContainer config={chartConfig} className="max-h-48 w-full">
       <BarChart
         barGap={10}
         accessibilityLayer

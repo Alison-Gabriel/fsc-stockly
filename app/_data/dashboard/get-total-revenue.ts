@@ -2,7 +2,7 @@ import { Prisma } from "@/app/_generated/prisma/client";
 import { db } from "@/app/_lib/prisma";
 import "server-only";
 
-interface TotalRevenueDTO {
+export interface TotalRevenueDTO {
   totalRevenue: number;
 }
 

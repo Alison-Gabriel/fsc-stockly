@@ -6,7 +6,6 @@ import {
 } from "../_components/header";
 import { SummaryCardSkeleton } from "./_components/summary-card";
 import { getDashboardSummary } from "../_data/dashboard/get-summary";
-import RevenueChart from "./_components/revenue-chart";
 import MostSoldProductItem from "./_components/most-sold-product-item";
 import { ScrollArea } from "../_components/ui/scroll-area";
 import TotalRevenueCard from "./_components/total-revenue-card";
@@ -15,10 +14,14 @@ import TodayRevenueCard from "./_components/today-revenue-card";
 import TotalSalesCard from "./_components/total-sales-card";
 import TotalStockCard from "./_components/total-stock-card";
 import TotalProductsCard from "./_components/total-products-card";
+import {
+  Last14DaysTotalRevenueCard,
+  Last14DaysTotalRevenueCardSkeleton,
+} from "./_components/last-14-days-total-revenue-card";
+import { Skeleton } from "../_components/ui/skeleton";
 
 const HomePage = async () => {
-  const { totalLast14DaysRevenue, mostSoldProducts } =
-    await getDashboardSummary();
+  const { mostSoldProducts } = await getDashboardSummary();
 
   return (
     <main className="h-full space-y-5">
@@ -55,16 +58,9 @@ const HomePage = async () => {
         </div>
 
         <div className="grid h-fit grid-cols-3 gap-6">
-          <div className="col-span-2 h-fit space-y-6 rounded-md bg-white p-6">
-            <div className="space-y-1">
-              <p className="text-lg font-semibold text-slate-900">Receita</p>
-              <p className="text-sm font-medium text-slate-500">
-                Últimos 14 dias
-              </p>
-            </div>
-
-            <RevenueChart data={totalLast14DaysRevenue} />
-          </div>
+          <Suspense fallback={<Last14DaysTotalRevenueCardSkeleton />}>
+            <Last14DaysTotalRevenueCard />
+          </Suspense>
 
           <div className="h-80 overflow-hidden rounded-md bg-white py-6">
             <div className="px-6">

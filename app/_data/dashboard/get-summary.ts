@@ -19,37 +19,10 @@ export interface MostSoldProductDTO {
 }
 
 interface SummaryDTO {
-  totalLast14DaysRevenue: DayTotalRevenue[];
   mostSoldProducts: MostSoldProductDTO[];
 }
 
 export const getDashboardSummary = async (): Promise<SummaryDTO> => {
-  const today = new Date(new Date().setHours(0, 0, 0, 0)).getDate();
-  const last14Days = [13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0].map(
-    (day) => new Date(new Date().setDate(today - day)),
-  );
-
-  const totalLast14DaysRevenue: DayTotalRevenue[] = [];
-
-  for (const day of last14Days) {
-    const startOfDay = new Date(day.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(day.setHours(23, 59, 59, 999));
-
-    const dayTotalRevenueQuery = Prisma.sql`
-      SELECT SUM("unitPrice" * "quantity") AS "totalRevenue" FROM "SaleProduct"
-      JOIN "Sale" ON "SaleProduct"."saleId" = "Sale"."id"
-      WHERE "Sale"."date" >= ${startOfDay} AND "Sale"."date" <= ${endOfDay}
-    `;
-
-    const dayTotalRevenue =
-      await db.$queryRaw<{ totalRevenue: number }[]>(dayTotalRevenueQuery);
-
-    totalLast14DaysRevenue.push({
-      day: dateFormatter(day),
-      totalRevenue: Number(dayTotalRevenue[0].totalRevenue),
-    });
-  }
-
   const mostSoldProductsQuery = Prisma.sql`
     SELECT "Product"."name", SUM("SaleProduct"."quantity") AS "totalSold", 
     "Product"."price", "Product"."stock", "Product"."id" as "productId" FROM "SaleProduct"
@@ -72,7 +45,6 @@ export const getDashboardSummary = async (): Promise<SummaryDTO> => {
   const [mostSoldProducts] = await Promise.all([mostSoldProductsPromise]);
 
   return {
-    totalLast14DaysRevenue: totalLast14DaysRevenue,
     mostSoldProducts: mostSoldProducts.map((product) => ({
       productId: product.productId,
       name: product.name,
