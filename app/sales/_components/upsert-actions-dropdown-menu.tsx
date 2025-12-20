@@ -29,7 +29,7 @@ const UpsertSaleActionsDropdownMenu = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon-sm">
-          <MoreHorizontalIcon className="size-4" />
+          <MoreHorizontalIcon className="size-4 text-emerald-500" />
         </Button>
       </DropdownMenuTrigger>
 

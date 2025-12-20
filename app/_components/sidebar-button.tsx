@@ -11,11 +11,11 @@ interface SidebarButtonProps extends LinkProps {
 
 const SidebarButton = ({ children, href, ...props }: SidebarButtonProps) => {
   const pathname = usePathname();
+  const isCurrentPath = pathname === href;
 
   return (
     <Button
-      className="justify-start gap-2"
-      variant={pathname === href ? "secondary" : "ghost"}
+      className={`justify-start gap-2 px-6 py-3 text-sm font-medium hover:bg-emerald-50 ${isCurrentPath ? "bg-emerald-50 font-semibold text-emerald-500" : "bg-transparent text-slate-500 hover:text-emerald-500"}`}
       asChild
     >
       <Link {...props} href={href}>

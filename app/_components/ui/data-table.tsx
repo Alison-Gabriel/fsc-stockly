@@ -32,14 +32,17 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden rounded-2xl bg-white p-2">
       <Table>
-        <TableHeader>
+        <TableHeader className="bg-muted/50">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id} className="p-4">
+                  <TableHead
+                    key={header.id}
+                    className="p-4 first:rounded-tl-xl last:rounded-tr-xl"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -62,7 +65,10 @@ export function DataTable<TData, TValue>({
                 className="group"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="p-4">
+                  <TableCell
+                    key={cell.id}
+                    className="p-4 group-last:first:rounded-bl-xl group-last:last:rounded-br-xl"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

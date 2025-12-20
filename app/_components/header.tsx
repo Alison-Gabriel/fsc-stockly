@@ -13,7 +13,7 @@ interface HeaderSubtitleProps {
 }
 
 export const HeaderSubtitle = ({ children }: HeaderSubtitleProps) => {
-  return <p className="text-primary text-xs font-semibold">{children}</p>;
+  return <p className="text-xs font-semibold text-emerald-500">{children}</p>;
 };
 
 interface HeaderLeftProps {

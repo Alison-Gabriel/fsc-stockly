@@ -1,4 +1,3 @@
-import { CircleIcon } from "lucide-react";
 import { ProductStatusDTO } from "../_data/product/get-products";
 import { Badge } from "./ui/badge";
 
@@ -17,13 +16,11 @@ const ProductStatusBadge = ({ status }: ProductStatusBadgeProps) => {
   };
 
   const getProductBadgeClassName = (productStatus: ProductStatusDTO) => {
-    switch (productStatus) {
-      case "IN_STOCK":
-        return "bg-primary text-primary-foreground";
-      case "OUT_OF_STOCK":
-        return "bg-secondary text-secondary-foreground";
-      default:
-        return "gap-1.5 font-semibold";
+    if (productStatus === "IN_STOCK") {
+      return "bg-emerald-500 gap-1.5 font-semibold text-primary-foreground";
+    }
+    if (productStatus === "OUT_OF_STOCK") {
+      return "bg-secondary gap-1.5 font-semibold text-secondary-foreground";
     }
   };
 
